@@ -1,0 +1,34 @@
+{
+  "name": "myapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "forever start --uid 'dev' -a -l ~/dev/forever.log -o ~/dev/out.log -e ~/dev/err.log ./bin/www"
+  },
+  "dependencies": {
+    "colors": "^1.3.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "debug": "~2.6.9",
+    "dotenv": "^8.2.0",
+    "express": "~4.16.0",
+    "express-rate-limit": "^5.1.3",
+    "google-auth-library": "^6.1.0",
+    "helmet": "^3.21.2",
+    "http-errors": "~1.6.2",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "~1.9.0",
+    "multer": "^1.4.2",
+    "mysql2": "^1.6.5",
+    "path": "^0.12.7",
+    "pug": "^2.0.4",
+    "rotating-file-stream": "^2.0.0",
+    "sequelize": "^5.21.3",
+    "socket.io": "^2.2.0",
+    "socketio-jwt": "^4.5.0",
+    "uuid": "^3.3.2"
+  }
+}
