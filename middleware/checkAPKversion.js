@@ -3,8 +3,8 @@ const path  = require('path');
 module.exports = (req,res,next)=>{
 	let rawInfo = fs.readFileSync(path.join(__dirname, '../apk/donshi.json'));
 	let info = (JSON.parse(rawInfo))[0];
-	let {size} = fs.statSync(path.join(__dirname, '../apk/donshi.apk'));
-	info.apkSize = size;
+	//let {size} = fs.statSync(path.join(__dirname, '../apk/donshi.apk'));
+	//info.apkSize = size;
 	const{currentVersion}=req.body;
 	info.updateStatus = (currentVersion < info.versionCode)?1:0;
 	info.msg = (currentVersion < info.versionCode)
