@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "forever start --uid 'dev' -a -l ~/dev/forever.log -o ~/dev/out.log -e ~/dev/err.log ./bin/www"
+    "dev": "set NODE_ENV=development && node ./bin/www"
   },
   "dependencies": {
     "colors": "^1.3.3",
@@ -16,7 +16,7 @@
     "dotenv": "^8.2.0",
     "express": "~4.16.0",
     "express-rate-limit": "^5.1.3",
-    "google-auth-library": "^6.1.0",
+    "google-auth-library": "^6.1.6",
     "helmet": "^3.21.2",
     "http-errors": "~1.6.2",
     "jsonwebtoken": "^8.5.1",
@@ -30,5 +30,8 @@
     "socket.io": "^2.2.0",
     "socketio-jwt": "^4.5.0",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.5.1"
   }
 }

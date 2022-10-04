@@ -6,21 +6,33 @@ const {postInclude,postOrder} = require('../helper');
 const checkValidDate = require('../../util/checkValidDate');
 const errHandler = require('../../util/errHandler');
 const verifyGoogleToken = require('../../middleware/verifyGoogleToken');
+
+class RegisterFormError extends Error {} 
 function preProcessData(body) {
     try {
         const {password,gender,birthday,introduction,phone,pictureUrl} = body;
-    
-        if(phone===null)delete body.phone;
-        if(gender===null)delete body.gender;
+        if(phone===null){
+            throw new RegisterFormError("Phone cannot be null");
+        };
+        if(gender===null){
+            throw new RegisterFormError("Gender cannot be null");
+        }
+        if(birthday==null){
+            throw new RegisterFormError("Birthday cannot be null");
+        }else if(checkValidDate(new Date(birthday))){
+            throw new RegisterFormError("Wrong format of birthday");
+        }
+        else body.birthday = new Date(birthday);
         if(password===null)delete body.password; // 沒有這個欄位
         if(pictureUrl===null)delete body.pictureUrl;
         if(introduction===null)delete body.introduction;
-    
-        if(birthday==null)delete body.birthday;
-        else if(checkValidDate(new Date(birthday)))delete body.birthday;
-        else body.birthday = new Date(birthday);
+
     } catch (error) {
-        console.error(error);
+        if(error instanceof RegisterFormError){
+            throw error;
+        }else{
+            console.log(error);
+        }
     }
     return body;
 }
@@ -115,7 +127,7 @@ exports.googleLogin = (req, res, next)=>{
                 account:user.account,
                 username:user.username,
                 role:user.role,
-		pictureUrl:user.pictureUrl
+		        pictureUrl:user.pictureUrl
             }
             const response ={
                 success: true,
@@ -167,8 +179,18 @@ exports.isExist =(req,res,next)=>{
 exports.register = (req,res,next)=>{
     let {body} = req;
     const {googleIdToken} = body;
-    body = preProcessData(body);
+    try{
+        body = preProcessData(body);
+    }catch(err){
+        console.log("catch err!");
+        const response = {
+            success:false,
+            msg:err.message
+        }
+        res.status(400).send(response);
+    }
     body.role = 1;
+    
     verifyGoogleToken(googleIdToken)
     .then(({email})=>{ body.account=email; delete body.googleIdToken;})
     .then(()=>User.findOrCreate({where:{account:body.account},defaults:body}))
@@ -187,6 +209,7 @@ exports.register = (req,res,next)=>{
         res.status(200).send(response);
     })
     .catch(err =>errHandler(err,res))
+    
     
 }
 

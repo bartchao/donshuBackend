@@ -44,16 +44,20 @@ User.init({
     },
     gender: {
         type: Sequelize.STRING,
+        allowNull: false,
         values: ['男', '女', '其他']
     },
     birthday: {
-        type: Sequelize.DATEONLY
+        type: Sequelize.DATEONLY,
+        allowNull: false,
+
     },
     introduction: {
         type: Sequelize.TEXT,
     },
     phone: {
         type: Sequelize.STRING,
+        allowNull: false,
     },
     pictureUrl:{
         type: Sequelize.STRING,

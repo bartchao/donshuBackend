@@ -7,3 +7,6 @@ client-ssl/*
 node_modules/*
 google_client.js
 .db_data/*
+
+.docker/
+.devcontainer

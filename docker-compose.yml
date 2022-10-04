@@ -1,21 +1,23 @@
 version: '3.2'
 services:
     web:
-        image: node:lts-buster
+        image: node:14.20.0-buster-slim
         container_name: node14
         volumes:
-            - ./:/root/myapp
+            - ./:/home/node/app
         ports:
-            - "3000:3000"
+            - "5000:3000"
+        working_dir: /home/node/app
         depends_on:
             - mysql
         command: /bin/bash -c "npm install && yarn start"
     mysql:
-        image: mysql:latest
+        image: mysql:5.7.39-debian
         container_name: mysqldatabase
         ports:
             - "3306:3306"
         volumes:
-            - ./.db_data:/var/lib/mysql
+            - ./.docker/mysql:/var/lib/mysql
         environment:
-            MYSQL_ROOT_PASSWORD: root
+            MYSQL_ROOT_PASSWORD: 2j/g6ru4cj84
+            
