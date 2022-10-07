@@ -4,6 +4,7 @@ module.exports = {
     commonjs: true,
     es2021: true
   },
+  ignorePatterns: ["node_modules/*"],
   extends: "standard",
   overrides: [
   ],

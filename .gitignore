@@ -9,4 +9,4 @@ google_client.js
 .db_data/*
 
 .docker/
-.devcontainer
+.devcontainer/

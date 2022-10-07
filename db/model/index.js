@@ -1,33 +1,33 @@
-const sequelize = require('../db');
-const Type = require('./type');
-const Topic = require('./topic');
-const User = require('./user');
-const Post = require('./post');
-const File = require('./file');
-const Comment = require('./comment');
-const Follow = require('./follow');
-const Reply = require('./reply');
+const sequelize = require("../db");
+const Type = require("./type");
+const Topic = require("./topic");
+const User = require("./user");
+const Post = require("./post");
+const File = require("./file");
+const Comment = require("./comment");
+const Follow = require("./follow");
+const Reply = require("./reply");
+const UserTicket = require("./userTickets");
 User.hasMany(Post);
-User.hasMany(Follow)
-Follow.belongsTo(Topic)
-Topic.belongsTo(Type)
-Post.belongsTo(User)
-Post.belongsTo(Type)
-Post.belongsTo(Topic)
-Post.hasMany(File)
-Post.hasMany(Comment)
+User.hasMany(Follow);
+Follow.belongsTo(Topic);
+Topic.belongsTo(Type);
+Post.belongsTo(User);
+Post.belongsTo(Type);
+Post.belongsTo(Topic);
+Post.hasMany(File);
+Post.hasMany(Comment);
 Comment.belongsTo(User);
 Comment.belongsTo(Post);
-Comment.hasMany(Reply)
+Comment.hasMany(Reply);
 Reply.belongsTo(Comment);
 Reply.belongsTo(User);
+User.UserTicket = User.hasOne(UserTicket, {
+  onDelete: "CASCADE"
+});
+UserTicket.belongsTo(User);
 
-
-console.log("set sequelize...\n".help);
-//  test 
-sequelize.sync({force:false}).then(()=>{
-    console.log("\nset sequelize successful!\n".success);
-    /*
+/*
     const typeArr = ["食","衣","住","行","育","樂","醫療長照"];
     const topicArr =[
                     {topicName:"菜車",typeId:1},
@@ -50,41 +50,40 @@ sequelize.sync({force:false}).then(()=>{
     .then(()=>Promise.all(topicArr.map(element => Topic.create(element))))
     */
 
-    
-    // .then(()=>User.addUser("CCCCC","pCCCCd","muC",1))
-    // .then(user=>Post.create(
-    //     {
-    //         typeId:1,
-    //         topicId:1,
-    //         title:"EEEEE",
-    //         startDate:new Date,
-    //         endDate:new Date,
-    //         position:"dqwdwqdwqdw",
-    //         latitude:3213213213,
-    //         longitude:123123213,
-    //         text:"AAAA",
-    //         userId:user.id,
-    //         // postTime:new Date(),
-    //         isNeed:true,
-    //         files:[
-    //             {
-    //                 url:"fdewfew",
-    //                 fileName:"fdewfew",
-    //             },{
-    //                 url:"AAAAA",
-    //                 fileName:"AAAAAAAAA",
-    //             }
-    //         ],
-    //         comments:[{
-    //             text:"fewfewfewf",
-    //             userId:user.id
-    //             },
-    //             {
-    //                 text:"vvdsvdsvdsvdf",
-    //                 userId:user.id
-    //                 }
-    //         ],            
-    //     },{ include: [ File,Comment ]}))
+// .then(()=>User.addUser("CCCCC","pCCCCd","muC",1))
+// .then(user=>Post.create(
+//     {
+//         typeId:1,
+//         topicId:1,
+//         title:"EEEEE",
+//         startDate:new Date,
+//         endDate:new Date,
+//         position:"dqwdwqdwqdw",
+//         latitude:3213213213,
+//         longitude:123123213,
+//         text:"AAAA",
+//         userId:user.id,
+//         // postTime:new Date(),
+//         isNeed:true,
+//         files:[
+//             {
+//                 url:"fdewfew",
+//                 fileName:"fdewfew",
+//             },{
+//                 url:"AAAAA",
+//                 fileName:"AAAAAAAAA",
+//             }
+//         ],
+//         comments:[{
+//             text:"fewfewfewf",
+//             userId:user.id
+//             },
+//             {
+//                 text:"vvdsvdsvdsvdf",
+//                 userId:user.id
+//                 }
+//         ],
+//     },{ include: [ File,Comment ]}))
 // .then(()=>User.findOne({where:{account:"CCCCC"}}))
 // .then(user=>{
 //     console.log("user.id--------------------");
@@ -97,7 +96,7 @@ sequelize.sync({force:false}).then(()=>{
 //             text:"fewfewfewfwefew",
 //             userId:user.id,
 //             postTime:new Date(),
-//             isNeed:true,          
+//             isNeed:true,
 //         })
 // })
 // .then(()=>User.findOne({where:{account:"CCCCC"}}))
@@ -107,16 +106,22 @@ sequelize.sync({force:false}).then(()=>{
 //         let element = value.dataValues;
 //         console.log(element.title);
 //     })
-})
-
+console.log("set sequelize...\n".help);
+//  test
+sequelize.sync({ force: false }).then(() => {
+  console.log("\nset sequelize successful!\n".success);
+}).catch((err) => {
+  console.error(err);
+});
 
 module.exports = {
- Type ,
- Topic ,
- User ,
- Post ,
- File ,
- Comment ,
- Follow ,
- Reply
-}
+  Type,
+  Topic,
+  User,
+  Post,
+  File,
+  Comment,
+  Follow,
+  Reply,
+  UserTicket
+};
