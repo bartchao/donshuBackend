@@ -1,15 +1,12 @@
 /* eslint-disable no-tabs */
 const Op = require("sequelize").Op;
 const Model = require("../model");
-const { User } = Model;
+const { User, UserTicket } = Model;
 const getNewToken = require("../../util/token/getNewToken");
 const { postInclude, postOrder, userTicketsInclude } = require("../helper");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
-const UserTickets = require("../model/userTickets");
-
-const { sequelize } = require("../model/userTickets");
 
 class RegisterFormError extends Error {}
 function preProcessData (body) {
@@ -247,8 +244,8 @@ exports.update = (req, res, next) => {
       if (user === null) return Promise.reject(new Error("Null"));
       if (user.id === tid) {
         try {
-          const result = await sequelize.transaction(async (t) => {
-            await UserTickets.upsert({ userId: user.id, hasUserTicket: body.userTicket.hasUserTicket }, { transaction: t }
+          const result = await User.sequelize.transaction(async (t) => {
+            await UserTicket.upsert({ userId: user.id, hasUserTicket: body.userTicket.hasUserTicket }, { transaction: t }
             );
             await User.update(body, { where: { id: user.id }, fields: Object.keys(body), transaction: t });
           });
@@ -259,6 +256,11 @@ exports.update = (req, res, next) => {
           // return result;
         } catch (error) {
           console.error(error);
+          if (error.name === "SequelizeValidationError") {
+            return Promise.reject(new Error(error.message));
+          } else {
+            return Promise.reject(new Error("Server Error"));
+          }
         }
       } else return Promise.reject(new Error("Forbbiden"));
     })

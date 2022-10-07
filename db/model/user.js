@@ -17,8 +17,7 @@ class User extends Sequelize.Model {
   static authenticate (account) {
     return User.findOne({
       where: {
-        account,
-        password
+        account
       }
     });
   }

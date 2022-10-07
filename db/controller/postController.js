@@ -1,6 +1,6 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
-const { Post, File, Comment } = Model;
+const { Post, File, Comment, Topic, Type } = Model;
 const order = require("../helper").postOrder;
 const include = require("../helper").postInclude;
 const checkValidDate = require("../../util/checkValidDate");
@@ -9,7 +9,12 @@ function preProcessData (body, user) {
   const { type, topic, startDate, endDate } = body;
   delete body.createdAt;
   body.typeId = type.id; delete body.type;
-  body.topicId = topic.id; delete body.topic;
+  if (topic.topicName !== undefined && topic.id === undefined) {
+    // User set custom topic
+  } else if (topic.id !== undefined) {
+    body.topicId = topic.id;
+    delete body.topic;
+  }
   body.startDate = new Date(startDate);
   if (checkValidDate(body.startDate)) delete body.startDate;
   body.endDate = new Date(endDate);
@@ -91,13 +96,31 @@ exports.getById = (req, res, next) => {
     .then(response => res.status(200).send(response))
     .catch(err => errHandler(err, res));
 };
+async function createPost (body) {
+  const addCustomTopic = {
+    typeId: body.typeId,
+    topicName: body.topic.topicName
+  };
+  const result = await Post.sequelize.transaction(async (t) => {
+    const [topicResult, success] = await Topic.findOrCreate({ where: addCustomTopic, defaults: addCustomTopic, transaction: t });
+    body.topicId = topicResult.id;
+    delete body.topic;
+    const postResult = await Post.create(body, { include: [File], transaction: t }).catch(err => console.error(err));
+    return postResult;
+  });
+  return result;
+}
 exports.addNewPost = (req, res, next) => {
   let { body, user } = req;
   body = preProcessData(body, user);
   console.log(body);
-  Post.create(body, { include: [File] })
-    .then(result => res.status(200).send({ succeess: true }))
-    .catch(err => errHandler(err, res));
+  try {
+    createPost(body);
+    res.status(200).send({ succeess: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
 };
 exports.delete = (req, res, next) => {
   const body = req.body;

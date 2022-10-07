@@ -21,6 +21,11 @@ Topic.init({
   topicName: {
     allowNull: false,
     type: Sequelize.STRING
+  },
+  isCreatedByUser: {
+    allowNull: false,
+    defaultValue: true,
+    type: Sequelize.BOOLEAN
   }
 }, { timestamps: false, sequelize, modelName });
 module.exports = Topic;
