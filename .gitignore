@@ -2,6 +2,8 @@ apk/*
 uploads/*
 *.log
 .env
+.env.stagging
+.env.production
 log/*
 client-ssl/*
 node_modules/*
