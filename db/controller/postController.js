@@ -6,15 +6,9 @@ const include = require("../helper").postInclude;
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 function preProcessData (body, user) {
-  const { type, topic, startDate, endDate } = body;
+  const { type, startDate, endDate } = body;
   delete body.createdAt;
   body.typeId = type.id; delete body.type;
-  if (topic.topicName !== undefined && topic.id === undefined) {
-    // User set custom topic
-  } else if (topic.id !== undefined) {
-    body.topicId = topic.id;
-    delete body.topic;
-  }
   body.startDate = new Date(startDate);
   if (checkValidDate(body.startDate)) delete body.startDate;
   body.endDate = new Date(endDate);
@@ -97,13 +91,17 @@ exports.getById = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 async function createPost (body) {
-  const addCustomTopic = {
-    typeId: body.typeId,
-    topicName: body.topic.topicName
-  };
   const result = await Post.sequelize.transaction(async (t) => {
-    const [topicResult, success] = await Topic.findOrCreate({ where: addCustomTopic, defaults: addCustomTopic, transaction: t });
-    body.topicId = topicResult.id;
+    if (body.topic.topicName !== undefined) {
+      const addCustomTopic = {
+        typeId: body.typeId,
+        topicName: body.topic.topicName
+      };
+      const [topicResult, success] = await Topic.findOrCreate({ where: addCustomTopic, defaults: addCustomTopic, transaction: t });
+      body.topicId = topicResult.id;
+    } else if (body.topic.topicId !== undefined) {
+      body.topicId = body.topic.topicId;
+    }
     delete body.topic;
     const postResult = await Post.create(body, { include: [File], transaction: t }).catch(err => console.error(err));
     return postResult;
