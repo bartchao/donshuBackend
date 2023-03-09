@@ -2,15 +2,14 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
-const { postInclude, postOrder, userTicketsInclude } = require("../helper");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
-const { Type, Topic, Post, File, Comment, User, Reply ,UserTicket} = Model;
+const { Type, Topic, Post, File, Comment, User, Reply, UserTicket } = Model;
 
 
-class RegisterFormError extends Error {}
-function preProcessData (body) {
+class RegisterFormError extends Error { }
+function preProcessData(body) {
   try {
     const { password, gender, birthday, introduction, phone, pictureUrl } =
       body;
@@ -37,52 +36,16 @@ function preProcessData (body) {
   }
   return body;
 }
-function getUserPosts(userId,isNeed){
+function getUserPosts(userId, isNeed) {
   return User.findByPk(userId)
     .then((user) =>
       user === null
         ? Promise.reject(new Error("Null"))
         : user.getPosts({
-          where: { isNeed: isNeed === "true" },
-          order: [
-            ["updatedAt", "DESC"],
-            [{ model: Comment }, "updatedAt", "ASC"]
-          ],
-          include: [
-          {
-            model: Topic,
-            attributes: ["id", "topicName"]
-          },
-          {
-            model: Type,
-            attributes: ["id", "typeName"]
-          },
-          {
-            model: User,
-            attributes: ["id", "username", "pictureUrl", "role"],
-          },
-          {
-            model: File,
-            attributes: ["id", "url", "fileName"]
-          }, {
-            model: Comment,
-            attributes: ["id", "text", "updatedAt"],
-            include: [{
-              model: User,
-              attributes: ["id", "username", "pictureUrl", "role"]
-            },
-            {
-              model: Reply,
-              attributes: ["id", "text", "updatedAt"],
-              include: [{
-                model: User,
-                attributes: ["id", "username", "pictureUrl", "role"]
-              }]
-            }]
-          }
-        ]})
+          where: { isNeed: isNeed === "true" }
+        })
     )
-    
+
 }
 exports.searchUser = (req, res, next) => {
   const { search } = req.body;
@@ -118,7 +81,7 @@ exports.searchUser = (req, res, next) => {
 // }
 
 exports.getAllUser = (req, res, next) => {
-  User.findAll({ attributes: ["id", "username"]})
+  User.findAll({ attributes: ["id", "username"] })
     .then((user) => {
       res.status(200).send(user);
     })
@@ -140,7 +103,7 @@ exports.getOtherUser = (req, res, next) => {
 exports.getOtherUserPosts = (req, res, next) => {
   const { body } = req;
   const { id, isNeed } = body;
-  getUserPosts(id,isNeed)
+  getUserPosts(id, isNeed)
     .then((posts) => res.status(200).send(posts))
     .catch((error) => {
       console.error(error);
@@ -265,7 +228,7 @@ exports.register = (req, res, next) => {
 exports.getUser = (req, res, next) => {
   const { id } = req.user;
   // console.log('getUser!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.log(typeof(id));
+  console.log(typeof (id));
   User.findByPk(id)
     .then((user) => {
       res.status(200).send(user);
@@ -323,7 +286,7 @@ exports.getPosts = (req, res, next) => {
   const { user, body } = req;
   const { isNeed } = body;
   const { id } = user;
-  getUserPosts(id,isNeed)
+  getUserPosts(id, isNeed)
     .then((posts) => res.status(200).send(posts))
     .catch((err) => errHandler(err, res));
 };

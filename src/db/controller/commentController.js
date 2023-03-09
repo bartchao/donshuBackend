@@ -2,11 +2,26 @@ const Model = require("../model");
 const socketio = require("../../socketio");
 const errHandler = require("../../util/errHandler");
 const { Post, Comment, User, Reply } = Model;
-const { postOrder, postInclude, cmtInclude } = require("../helper");
+const cmtInclude = [
+  {
+    model: User,
+    attributes: ["id", "username", "pictureUrl", "role"]
+  },
+  {
+    model: Reply,
+    attributes: ["id", "text", "updatedAt"],
+    include: [
+      {
+        model: User,
+        attributes: ["id", "username", "pictureUrl", "role"]
+      }
+    ]
+  }
+];
 async function response (cmt, res, action) {
   cmt = await cmt.reload({ include: cmtInclude });
   if (action == "DELETE") await cmt.destroy();
-  return await Post.findOne({ where: { id: cmt.postId }, include: postInclude, order: postOrder })
+  return await Post.findOne({ where: { id: cmt.postId }})
     .then(post => {
       const { io } = socketio;
       const response = {

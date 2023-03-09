@@ -1,22 +1,22 @@
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
-const Model = require("../model");
-const UserTickets = require("../model/userTickets");
-const { Type, Topic, Post, File, Comment, User, Reply } = Model;
-const postOrder = [
+var Sequelize = require("sequelize");
+var Op = Sequelize.Op;
+var Model = require("../model");
+var UserTickets = require("../model/userTickets");
+var { Type, Topic, Post, File, Comment, User, Reply } = Model;
+var postOrder = [
   ["updatedAt", "DESC"],
   [{ model: Comment }, "updatedAt", "ASC"]
 ];
-const userTicketsInclude = [
+var userTicketsInclude = [
   { model: UserTickets, attributes: ["hasUserTicket"] }
 ];
-const rpyInclude = [
+var rpyInclude = [
   {
     model: User,
     attributes: ["id", "username", "pictureUrl", "role"]
   }
 ];
-const cmtInclude = [
+var cmtInclude = [
   {
     model: User,
     attributes: ["id", "username", "pictureUrl", "role"]
@@ -27,7 +27,7 @@ const cmtInclude = [
     include: rpyInclude
   }
 ];
-const postInclude = [
+var postInclude = [
   {
     model: Topic,
     attributes: ["id", "topicName"]

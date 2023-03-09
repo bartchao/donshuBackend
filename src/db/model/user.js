@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../db");
 const uuid = require("uuid/v4");
-const { userTicketsInclude } = require("../helper");
+const UserTickets = require("./userTickets");
 const modelName = "user";
 class User extends Sequelize.Model {
   static addUser(account, password, username, role) {
@@ -85,7 +85,9 @@ User.init({
 
 }, {
   defaultScope: {
-    include: userTicketsInclude
+    include: [
+      { model: UserTickets, attributes: ["hasUserTicket"] }
+    ]
   },
   scopes: {}, 
   sequelize, modelName});

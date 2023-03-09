@@ -1,15 +1,32 @@
 const { Post, Comment, User, Reply } = require("../model");
-const { postOrder, postInclude, cmtInclude, rpyInclude } = require("../helper");
+//const { cmtInclude, rpyInclude } = require("../helper");
 const errHandler = require("../../util/errHandler");
 const socketio = require("../../socketio");
 const io = socketio.getSocketio();
+const rpyInclude = [
+  {
+    model: User,
+    attributes: ["id", "username", "pictureUrl", "role"]
+  }
+];
+const cmtInclude = [
+  {
+    model: User,
+    attributes: ["id", "username", "pictureUrl", "role"]
+  },
+  {
+    model: Reply,
+    attributes: ["id", "text", "updatedAt"],
+    include: rpyInclude
+  }
+];
 
 async function response (rpy, res, action) {
   const cmt = await rpy.getComment({ include: cmtInclude });
   const reply = await rpy.reload({ include: rpyInclude });
   if (action == "DELETE") await reply.destroy();
   const comment = await cmt.reload({ include: cmtInclude });
-  return await Post.findOne({ where: { id: comment.postId }, include: postInclude, order: postOrder })
+  return await Post.findOne({ where: { id: comment.postId } })
     .then(post => {
       const { io } = socketio;
       const response = {

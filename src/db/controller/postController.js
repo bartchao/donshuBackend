@@ -1,8 +1,6 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
 const { Post, File, Comment, Topic, Type } = Model;
-const order = require("../helper").postOrder;
-const { postInclude } = require("../helper");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 function preProcessData (body, user) {
@@ -29,8 +27,6 @@ exports.query = (req, res, next) => {
       ],
       isNeed: (isNeed === "true")
     },
-    order,
-    include:postInclude
   })
     .then(response => res.status(200).send(response))
     .catch(err => errHandler(err, res));
@@ -55,9 +51,7 @@ exports.getAllWithType = (req, res, next) => {
     where: {
       typeId,
       isNeed: (isNeed === "true")
-    },
-    order,
-    include:postInclude
+    }
   })
     .then(response => res.status(200).send(response))
     .catch(err => errHandler(err, res));
@@ -73,9 +67,7 @@ exports.getLimitWithType = (req, res, next) => {
       isNeed: (isNeed === "true")
     },
     limit,
-    offset,
-    order,
-    include:postInclude
+    offset
   })
     .then(response => {
       console.log(response);
@@ -86,7 +78,7 @@ exports.getLimitWithType = (req, res, next) => {
 exports.getById = (req, res, next) => {
   const { body } = req;
   const { postId } = body;
-  Post.findOne({ where: { id: postId }, order, include:postInclude})
+  Post.findOne({ where: { id: postId }})
     .then(response => res.status(200).send(response))
     .catch(err => errHandler(err, res));
 };
