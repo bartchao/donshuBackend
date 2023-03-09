@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Controller = require("../db/controller/");
-const { postController, typeController, topicController, userController, commentController } = Controller;
+const { postController, typeController, topicController, userController } = Controller;
 
 //  post
 router.post("/post/getAllWithType", postController.getAllWithType);
