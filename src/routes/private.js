@@ -40,7 +40,7 @@ router.post("/user/getPosts", userController.getPosts);
 router.post("/user/getUser", userController.getUser);
 router.post("/user/update", userController.update);
 router.post("/user/getOtherUser", userController.getOtherUser);
-router.post("/user/getUserPosts", userController.getUserPosts);
+router.post("/user/getUserPosts", userController.getOtherUserPosts);
 router.post("/user/getAllUsername", userController.getAllUser);
 router.post("/user/searchUser", userController.searchUser);
 // topic

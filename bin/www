@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 require("dotenv").config();
-const colorConfig = require("../util/colorConfig");
+const colorConfig = require("../src/util/colorConfig");
 const app = require("../src/app");
-const socketio = require("../socketio");
+const socketio = require("../src/socketio");
 const debug = require("debug")("myapp:server");
 const http = require("http");
 /**

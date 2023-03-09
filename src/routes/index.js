@@ -24,7 +24,7 @@ router.get("/uploads/:upload", function (req, res) {
 
 router.get("/apk/:apkFile", function (req, res) {
   const file = req.params.apkFile;
-  const dirpath = path.join(__dirname, "../apk/");
+  const dirpath = path.join(__dirname, "../../apk/");
   console.log(req.params.apkFile);
   try {
     const apk = fs.readFileSync(path.join(dirpath, file));

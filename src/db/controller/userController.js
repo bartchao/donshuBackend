@@ -1,12 +1,13 @@
 /* eslint-disable no-tabs */
 const Op = require("sequelize").Op;
 const Model = require("../model");
-const { User, UserTicket } = Model;
 const getNewToken = require("../../util/token/getNewToken");
 const { postInclude, postOrder, userTicketsInclude } = require("../helper");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
+const { Type, Topic, Post, File, Comment, User, Reply ,UserTicket} = Model;
+
 
 class RegisterFormError extends Error {}
 function preProcessData (body) {
@@ -35,6 +36,53 @@ function preProcessData (body) {
     }
   }
   return body;
+}
+function getUserPosts(userId,isNeed){
+  return User.findByPk(userId)
+    .then((user) =>
+      user === null
+        ? Promise.reject(new Error("Null"))
+        : user.getPosts({
+          where: { isNeed: isNeed === "true" },
+          order: [
+            ["updatedAt", "DESC"],
+            [{ model: Comment }, "updatedAt", "ASC"]
+          ],
+          include: [
+          {
+            model: Topic,
+            attributes: ["id", "topicName"]
+          },
+          {
+            model: Type,
+            attributes: ["id", "typeName"]
+          },
+          {
+            model: User,
+            attributes: ["id", "username", "pictureUrl", "role"],
+          },
+          {
+            model: File,
+            attributes: ["id", "url", "fileName"]
+          }, {
+            model: Comment,
+            attributes: ["id", "text", "updatedAt"],
+            include: [{
+              model: User,
+              attributes: ["id", "username", "pictureUrl", "role"]
+            },
+            {
+              model: Reply,
+              attributes: ["id", "text", "updatedAt"],
+              include: [{
+                model: User,
+                attributes: ["id", "username", "pictureUrl", "role"]
+              }]
+            }]
+          }
+        ]})
+    )
+    
 }
 exports.searchUser = (req, res, next) => {
   const { search } = req.body;
@@ -89,19 +137,10 @@ exports.getOtherUser = (req, res, next) => {
       res.status(500).send({ success: false });
     });
 };
-exports.getUserPosts = (req, res, next) => {
+exports.getOtherUserPosts = (req, res, next) => {
   const { body } = req;
   const { id, isNeed } = body;
-  User.findByPk(id)
-    .then((user) =>
-      user === null
-        ? Promise.reject(new Error("Null"))
-        : user.getPosts({
-          where: { isNeed: isNeed === "true" },
-          order: postOrder,
-          include: postInclude
-        })
-    )
+  getUserPosts(id,isNeed)
     .then((posts) => res.status(200).send(posts))
     .catch((error) => {
       console.error(error);
@@ -284,16 +323,7 @@ exports.getPosts = (req, res, next) => {
   const { user, body } = req;
   const { isNeed } = body;
   const { id } = user;
-  User.findByPk(id)
-    .then((user) =>
-      user === null
-        ? Promise.reject(new Error("Null"))
-        : user.getPosts({
-          where: { isNeed: isNeed === "true" },
-          order: postOrder,
-          include: postInclude
-        })
-    )
+  getUserPosts(id,isNeed)
     .then((posts) => res.status(200).send(posts))
     .catch((err) => errHandler(err, res));
 };
