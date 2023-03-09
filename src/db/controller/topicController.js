@@ -9,8 +9,8 @@ exports.getAll = (req, res, next) => {
 exports.getWithType = (req, res, next) => {
   const { body } = req;
   const { typeId } = body;
-  const isCreatedBySystem = 0;
-  Topic.findAll({ where: { typeId, isCreatedBySystem }, attributes: ["id", "topicName"] })
+  const isCreatedByUser = 0;
+  Topic.findAll({ where: { typeId, isCreatedByUser }, attributes: ["id", "topicName"] })
     .then(response => {
       console.log(response);
       res.status(200).send(response);
