@@ -42,7 +42,7 @@ exports.searchUser = (req, res, next) => {
     attributes: ["id", "username", "pictureUrl"],
     where: {
       username: { [Op.startsWith]: search }
-    }
+    },
   })
     .then((user) => {
       res.status(200).send(user);
@@ -70,7 +70,7 @@ exports.searchUser = (req, res, next) => {
 // }
 
 exports.getAllUser = (req, res, next) => {
-  User.findAll({ attributes: ["id", "username"], include: userTicketsInclude })
+  User.findAll({ attributes: ["id", "username"]})
     .then((user) => {
       res.status(200).send(user);
     })
@@ -81,7 +81,7 @@ exports.getAllUser = (req, res, next) => {
 };
 exports.getOtherUser = (req, res, next) => {
   const { id } = req.body;
-  User.findByPk({ id, include: userTicketsInclude })
+  User.findByPk(id)
     .then((user) => {
       res.status(200).send(user);
     })
@@ -226,8 +226,8 @@ exports.register = (req, res, next) => {
 exports.getUser = (req, res, next) => {
   const { id } = req.user;
   // console.log('getUser!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.log(id);
-  User.findByPk({ id, include: userTicketsInclude })
+  console.log(typeof(id));
+  User.findByPk(id)
     .then((user) => {
       res.status(200).send(user);
     })
@@ -250,8 +250,7 @@ exports.update = (req, res, next) => {
             await User.update(body, { where: { id: user.id }, fields: Object.keys(body), transaction: t });
           });
           return User.findOne({
-            where: { id: user.id },
-            include: userTicketsInclude
+            where: { id: user.id }
           });
           // return result;
         } catch (error) {

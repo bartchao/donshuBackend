@@ -7,6 +7,9 @@ const postOrder = [
   ["updatedAt", "DESC"],
   [{ model: Comment }, "updatedAt", "ASC"]
 ];
+const userTicketsInclude = [
+  { model: UserTickets, attributes: ["hasUserTicket"] }
+];
 const rpyInclude = [
   {
     model: User,
@@ -35,7 +38,7 @@ const postInclude = [
   },
   {
     model: User,
-    attributes: ["id", "username", "pictureUrl", "role"]
+    attributes: ["id", "username", "pictureUrl", "role"],
   },
   {
     model: File,
@@ -47,9 +50,7 @@ const postInclude = [
     include: cmtInclude
   }
 ];
-const userTicketsInclude = [
-  { model: UserTickets, attributes: ["hasUserTicket"] }
-];
+
 module.exports = {
   rpyInclude,
   cmtInclude,

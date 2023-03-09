@@ -8,6 +8,6 @@ module.exports = (req, res, next) => {
     console.debug("apikey");
     return (apiKey === process.env.API_KEY)
       ? next()
-      : res.status(403).send({ sucess: false });
-  } else res.status(403).send({ sucess: false });
+      : res.status(403).send({ sucess: false,message:"APIKEYFailed" });
+  } else res.status(403).send({ sucess: false,message:"APIKEYFailed" });
 };

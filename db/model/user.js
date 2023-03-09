@@ -1,9 +1,10 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../db");
 const uuid = require("uuid/v4");
+const { userTicketsInclude } = require("../helper");
 const modelName = "user";
 class User extends Sequelize.Model {
-  static addUser (account, password, username, role) {
+  static addUser(account, password, username, role) {
     return User.create({
       id: "553ab958-b567-4178-b79e-edbc53883557",
       account,
@@ -14,7 +15,7 @@ class User extends Sequelize.Model {
     });
   }
 
-  static authenticate (account) {
+  static authenticate(account) {
     return User.findOne({
       where: {
         account
@@ -82,5 +83,10 @@ User.init({
     type: Sequelize.INTEGER // 1:user 0:admin
   }
 
-}, { sequelize, modelName });
+}, {
+  defaultScope: {
+    include: userTicketsInclude
+  },
+  scopes: {}, 
+  sequelize, modelName});
 module.exports = User;
