@@ -1,7 +1,6 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../db");
 const uuid = require("uuid/v4");
-const UserTickets = require("./userTickets");
 const modelName = "user";
 class User extends Sequelize.Model {
   static addUser(account, password, username, role) {
@@ -81,14 +80,15 @@ User.init({
   role: {
     allowNull: false,
     type: Sequelize.INTEGER // 1:user 0:admin
+  },
+  hasUserTicket:{
+    allowNull:false,
+    type:Sequelize.BOOLEAN,
+    defaultValue:false
   }
 
 }, {
-  defaultScope: {
-    include: [
-      { model: UserTickets, attributes: ["hasUserTicket"] }
-    ]
-  },
+  defaultScope: {},
   scopes: {}, 
   sequelize, modelName});
 module.exports = User;

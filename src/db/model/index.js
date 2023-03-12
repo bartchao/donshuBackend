@@ -7,7 +7,6 @@ const File = require("./file");
 const Comment = require("./comment");
 const Follow = require("./follow");
 const Reply = require("./reply");
-const UserTicket = require("./userTickets");
 User.hasMany(Post);
 User.hasMany(Follow);
 Follow.belongsTo(Topic);
@@ -22,10 +21,7 @@ Comment.belongsTo(Post);
 Comment.hasMany(Reply);
 Reply.belongsTo(Comment);
 Reply.belongsTo(User);
-User.UserTicket = User.hasOne(UserTicket, {
-  onDelete: "CASCADE"
-});
-UserTicket.belongsTo(User);
+
 
 /*
     const typeArr = ["食","衣","住","行","育","樂","醫療長照"];
@@ -122,6 +118,5 @@ module.exports = {
   File,
   Comment,
   Follow,
-  Reply,
-  UserTicket
+  Reply
 };

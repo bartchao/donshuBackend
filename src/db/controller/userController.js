@@ -5,13 +5,16 @@ const getNewToken = require("../../util/token/getNewToken");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
-const { Type, Topic, Post, File, Comment, User, Reply, UserTicket } = Model;
+const { Type, Topic, Post, File, Comment, User, Reply } = Model;
 
 class RegisterFormError extends Error { }
+// Need express-validator
 function preProcessData (body) {
   try {
-    const { password, gender, birthday, introduction, phone, pictureUrl } =
-      body;
+    const { password, gender, birthday, introduction, phone, pictureUrl,hasUserTicket } = body;
+    if(typeof hasUserTicket !== "boolean"){
+      throw new RegisterFormError("UserTicket cannot be other than true or false");
+    }
     if (phone === null) {
       throw new RegisterFormError("Phone cannot be null");
     }
@@ -245,10 +248,6 @@ exports.update = (req, res, next) => {
       if (user.id === tid) {
         try {
           await User.sequelize.transaction(async (t) => {
-            if (body.userTicket.hasUserTicket !== undefined && body.userTicket.hasUserTicket !== null) {
-              await UserTicket.upsert({ userId: user.id, hasUserTicket: body.userTicket.hasUserTicket }, { transaction: t }
-              );
-            }
             await User.update(body, { where: { id: user.id }, fields: Object.keys(body), transaction: t });
           });
           return User.findOne({
