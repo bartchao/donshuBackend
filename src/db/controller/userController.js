@@ -7,9 +7,8 @@ const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
 const { Type, Topic, Post, File, Comment, User, Reply, UserTicket } = Model;
 
-
 class RegisterFormError extends Error { }
-function preProcessData(body) {
+function preProcessData (body) {
   try {
     const { password, gender, birthday, introduction, phone, pictureUrl } =
       body;
@@ -36,7 +35,7 @@ function preProcessData(body) {
   }
   return body;
 }
-function getUserPosts(userId, isNeed) {
+function getUserPosts (userId, isNeed) {
   return User.findByPk(userId)
     .then((user) =>
       user === null
@@ -44,8 +43,7 @@ function getUserPosts(userId, isNeed) {
         : user.getPosts({
           where: { isNeed: isNeed === "true" }
         })
-    )
-
+    );
 }
 exports.searchUser = (req, res, next) => {
   const { search } = req.body;
@@ -53,7 +51,7 @@ exports.searchUser = (req, res, next) => {
     attributes: ["id", "username", "pictureUrl"],
     where: {
       username: { [Op.startsWith]: search }
-    },
+    }
   })
     .then((user) => {
       res.status(200).send(user);
@@ -246,9 +244,11 @@ exports.update = (req, res, next) => {
       if (user === null) return Promise.reject(new Error("Null"));
       if (user.id === tid) {
         try {
-          const result = await User.sequelize.transaction(async (t) => {
-            await UserTicket.upsert({ userId: user.id, hasUserTicket: body.userTicket.hasUserTicket }, { transaction: t }
-            );
+          await User.sequelize.transaction(async (t) => {
+            if (body.userTicket.hasUserTicket !== undefined && body.userTicket.hasUserTicket !== null) {
+              await UserTicket.upsert({ userId: user.id, hasUserTicket: body.userTicket.hasUserTicket }, { transaction: t }
+              );
+            }
             await User.update(body, { where: { id: user.id }, fields: Object.keys(body), transaction: t });
           });
           return User.findOne({
