@@ -5,14 +5,15 @@ const getNewToken = require("../../util/token/getNewToken");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
+const Validator = require("validatorjs");
 const { Type, Topic, Post, File, Comment, User, Reply } = Model;
 
 class RegisterFormError extends Error { }
 // Need express-validator
 function preProcessData (body) {
   try {
-    const { password, gender, birthday, introduction, phone, pictureUrl,hasUserTicket } = body;
-    if(typeof hasUserTicket !== "boolean"){
+    const { password, gender, birthday, introduction, phone, pictureUrl, hasUserTicket } = body;
+    if (typeof hasUserTicket !== "boolean") {
       throw new RegisterFormError("UserTicket cannot be other than true or false");
     }
     if (phone === null) {

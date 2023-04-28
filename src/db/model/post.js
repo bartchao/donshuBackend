@@ -54,7 +54,7 @@ Post.init({
       },
       {
         model: User,
-        attributes: ["id", "username", "pictureUrl", "role"],
+        attributes: ["id", "username", "pictureUrl", "role"]
       },
       {
         model: File,
@@ -76,12 +76,14 @@ Post.init({
         }]
       }
     ],
-    order:[
+    order: [
       ["updatedAt", "DESC"],
       [{ model: Comment }, "updatedAt", "ASC"]
     ]
   },
-  scopes: {}, sequelize, modelName
+  scopes: {},
+  sequelize,
+  modelName
 });
 
 module.exports = Post;

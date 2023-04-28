@@ -3,7 +3,7 @@ const sequelize = require("../db");
 const uuid = require("uuid/v4");
 const modelName = "user";
 class User extends Sequelize.Model {
-  static addUser(account, password, username, role) {
+  static addUser (account, password, username, role) {
     return User.create({
       id: "553ab958-b567-4178-b79e-edbc53883557",
       account,
@@ -14,7 +14,7 @@ class User extends Sequelize.Model {
     });
   }
 
-  static authenticate(account) {
+  static authenticate (account) {
     return User.findOne({
       where: {
         account
@@ -81,14 +81,16 @@ User.init({
     allowNull: false,
     type: Sequelize.INTEGER // 1:user 0:admin
   },
-  hasUserTicket:{
-    allowNull:false,
-    type:Sequelize.BOOLEAN,
-    defaultValue:false
+  hasUserTicket: {
+    allowNull: false,
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
   }
 
 }, {
   defaultScope: {},
-  scopes: {}, 
-  sequelize, modelName});
+  scopes: {},
+  sequelize,
+  modelName
+});
 module.exports = User;
