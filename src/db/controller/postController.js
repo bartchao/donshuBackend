@@ -29,7 +29,7 @@ exports.query = (req, res, next) => {
       isNeed: (isNeed === "true")
     }
   })
-    .then(response => succeessResponse(req, res, response))
+    .then(response => successResponse(req, res, response))
     .catch(err => errorResponse(req, res, err.message));
 };
 exports.addComment = (req, res, next) => {
@@ -40,7 +40,7 @@ exports.addComment = (req, res, next) => {
     .then(post => (post === null)
       ? Promise.reject(new Error("Null"))
       : newComment.save())
-    .then((response) => succeessResponse(req, res, response))
+    .then((response) => successResponse(req, res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getAllWithType = (req, res, next) => {
@@ -51,7 +51,7 @@ exports.getAllWithType = (req, res, next) => {
       isNeed: (isNeed === "true")
     }
   })
-    .then(response => succeessResponse(req, res, response))
+    .then(response => successResponse(req, res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getLimitWithType = (req, res, next) => {
@@ -136,7 +136,7 @@ exports.update = (req, res, next) => {
       } else { return Promise.reject(new Error("Forbbiden")); }
     })
     .then(post => {
-      succeessResponse(res, post);
+      successResponse(res, post);
     })
     .catch(err => errHandler(err, res));
 };

@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Middleware = require("../middleware/");
 const { checkToken, checkTokExp, ImgUpload, checkAPKversion } = Middleware;
+const { validate } = require("express-validation");
+const postValidator = require("../db/validator/post.validator");
+const topicValidator = require("../db/validator/topic.validator");
 const Controller = require("../db/controller/");
 const {
   postController,
@@ -13,8 +16,8 @@ const {
 } = Controller;
 // for debug
 router.use((req, res, next) => { // just for debug
-  //console.log(req.headers);
-  //console.log(req.body);
+  // console.log(req.headers);
+  // console.log(req.body);
   next();
 });
 
@@ -24,7 +27,7 @@ router.use(checkToken);
 router.post("/checkAPKversion", checkAPKversion);
 //  post
 router.post("/post/addNewPost", postController.addNewPost);
-router.post("/post/delete", postController.delete);
+router.post("/post/delete", validate(postValidator.getById), postController.delete);
 router.post("/post/update", postController.update);
 // comment
 router.post("/post/addComment", commentController.addNew);
@@ -45,7 +48,7 @@ router.post("/user/getAllUsername", userController.getAllUser);
 router.post("/user/searchUser", userController.searchUser);
 // topic
 router.post("/topic/addTopic", topicController.addTopic);
-router.post("/topic/deleteTopic", topicController.deleteTopic);
+router.post("/topic/deleteTopic", validate(topicValidator.getById), topicController.deleteTopic);
 
 // router.post('/user/delete',userController.delete);
 
