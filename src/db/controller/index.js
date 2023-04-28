@@ -4,6 +4,7 @@ const topicController = require("./topicController");
 const typeController = require("./typeController");
 const commentController = require("./commentController");
 const replyController = require("./replyController");
+const authController = require("./authController");
 
 module.exports = {
   userController,
@@ -11,5 +12,6 @@ module.exports = {
   topicController,
   typeController,
   commentController,
-  replyController
+  replyController,
+  authController
 };
