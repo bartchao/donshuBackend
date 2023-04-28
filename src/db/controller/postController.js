@@ -4,6 +4,7 @@ const { Post, File, Comment, Topic } = Model;
 
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
+
 const { successResponse, errorResponse } = require("../helper");
 function preProcessData (body, user) {
   const { type, startDate, endDate } = body;
@@ -17,6 +18,38 @@ function preProcessData (body, user) {
   return body;
 }
 exports.query = (req, res, next) => {
+  // #swagger.tags = ['Post']
+  /* #swagger.requestBody = {
+            required: false,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            search: {
+                                type: "integer"
+                            },
+                            isNeed: {
+                                type:"boolean"
+                            },
+                            typeId: {
+                              type: "integer"
+                            },
+                            limit: {
+                              type: "integer"
+                            },
+                            offser: {
+                              type: "integer"
+                            }
+                        },
+                    }
+                }
+              }
+    } */
+  /* #swagger.responses[200] = {
+      description: '回傳搜尋到的Post',
+      schema: { $ref: "#/definitions/Post" }
+    } */
   const { search, isNeed } = req.body;
   //  console.log(search);
   Post.findAll({
@@ -33,6 +66,7 @@ exports.query = (req, res, next) => {
     .catch(err => errorResponse(req, res, err.message));
 };
 exports.addComment = (req, res, next) => {
+  // #swagger.tags = ['Post']
   const comment = req.body;
   comment.userId = req.user.id;
   const newComment = Comment.build(comment);
@@ -44,6 +78,7 @@ exports.addComment = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.getAllWithType = (req, res, next) => {
+  // #swagger.tags = ['Post']
   const { typeId, isNeed } = req.body;
   Post.findAll({
     where: {
@@ -55,6 +90,7 @@ exports.getAllWithType = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.getLimitWithType = (req, res, next) => {
+  // #swagger.tags = ['Post']
   let { typeId, isNeed, offset, limit } = req.body;
   offset = parseInt(offset);
   limit = parseInt(limit);
@@ -73,6 +109,23 @@ exports.getLimitWithType = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.getById = (req, res, next) => {
+  // #swagger.tags = ['Post']
+  /* #swagger.requestBody = {
+            required: true,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            postId: {
+                                type: "string"
+                            }
+                        },
+                        required: ["postId"]
+                    }
+                }
+              }
+    } */
   const { postId } = req.body;
   Post.findOne({ where: { id: postId } })
     .then(response => successResponse(res, response))
@@ -97,12 +150,30 @@ async function createPost (body) {
   return result;
 }
 exports.addNewPost = (req, res, next) => {
+  // #swagger.tags = ['Post']
   let { body, user } = req;
   body = preProcessData(body, user);
   // console.log(body);
   createPost(body).then(post => successResponse(res, post)).catch(err => errHandler(err, res));
 };
 exports.delete = (req, res, next) => {
+  // #swagger.tags = ['Post']
+  /* #swagger.requestBody = {
+            required: true,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            postId: {
+                                type: "string"
+                            }
+                        },
+                        required: ["postId"]
+                    }
+                }
+              }
+    } */
   const body = req.body;
   const pk = body.postId;
   Post.findByPk(pk)
@@ -114,6 +185,8 @@ exports.delete = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
+  // #swagger.tags = ['Post']
+
   const { body, user } = req;
   const { files } = body;
   const uPost = preProcessData(body, user);

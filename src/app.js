@@ -53,7 +53,6 @@ const accessLogStream = rfs.createStream("access.log", {
 }); */
 
 const app = express();
-// view engine setup
 
 app.enable("trust proxy");
 // app.use(logger("common", { stream: accessLogStream }));
@@ -66,6 +65,11 @@ app.use(helmet());
 app.use(cors());
 
 app.use("/", indexRouter);
+if (process.env.NODE_ENV !== "production") {
+  const swaggerUi = require("swagger-ui-express");
+  const swaggerDocument = require("../swagger/swagger_output.json");
+  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 app.use(checkAPIkey);
 

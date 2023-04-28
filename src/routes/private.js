@@ -8,7 +8,6 @@ const topicValidator = require("../db/validator/topic.validator");
 const Controller = require("../db/controller/");
 const {
   postController,
-  typeController,
   topicController,
   userController,
   commentController,

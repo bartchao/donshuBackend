@@ -1,6 +1,6 @@
 
-module.exports = class NotFoundError extends Error {};
-module.exports = class ForbiddenError extends Error {};
+const NotFoundError = class NotFoundError extends Error {};
+const ForbiddenError = class ForbiddenError extends Error {};
 const path = require("path");
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, prettyPrint } = format;
@@ -36,4 +36,5 @@ module.exports = (error, res) => {
     res.status(500).send({ Error: "Internal Server Error" });
   }
 };
-module.exports;
+module.exports.NotFoundError = NotFoundError;
+module.exports.ForbiddenError = ForbiddenError;

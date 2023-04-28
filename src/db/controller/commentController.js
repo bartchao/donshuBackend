@@ -35,6 +35,7 @@ async function response (cmt, res, action) {
     });
 }
 exports.addNew = (req, res, next) => {
+  // #swagger.tags = ['Comment']
   const { body, user } = req;
   const comment = body;
   comment.userId = user.id;
@@ -49,6 +50,8 @@ exports.addNew = (req, res, next) => {
     });
 };
 exports.addNewAndGetComments = (req, res, next) => {
+  // #swagger.tags = ['Comment']
+
   // const {body,user} = req;
   // const {postId}=body;
   // let comment = body;
@@ -68,7 +71,23 @@ exports.addNewAndGetComments = (req, res, next) => {
   //     .catch(err =>errHandler(err,res))
 };
 exports.delete = (req, res, next) => {
-  // console.log("object");
+  // #swagger.tags = ['Comment']
+  /* #swagger.requestBody = {
+            required: true,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            id: {
+                                type: "integer"
+                            }
+                        },
+                        required: ["id"]
+                    }
+                }
+              }
+    } */
   const { id } = req.body;
   Comment.findByPk(id)
     .then(comment => {
@@ -78,7 +97,26 @@ exports.delete = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
-  // console.log("!!!!!!!!!!!!!!!!!!!!!!");
+  // #swagger.tags = ['Comment']
+  /* #swagger.requestBody = {
+            required: false,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            id: {
+                                type: "integer"
+                            },
+                            text: {
+                              type: "string"
+                            }
+                        },
+                        required: ["id","text"]
+                    }
+                }
+              }
+    } */
   const { id, text } = req.body;
   Comment.findByPk(id)
     .then(comment => {
