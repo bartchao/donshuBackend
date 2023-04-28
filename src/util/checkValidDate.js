@@ -1,1 +1,1 @@
-module.exports = (date) => !(date instanceof Date && !isNaN(date.getTime()))
+module.exports = (date) => !(date instanceof Date && !isNaN(date.getTime()));

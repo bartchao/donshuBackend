@@ -1,38 +1,37 @@
 const Model = require("../model");
 const { Topic, Post } = Model;
 const errHandler = require("../../util/errHandler");
+const { successResponse } = require("../helper");
 exports.getAll = (req, res, next) => {
   Topic.findAll({ attributes: ["id", "topicName"] })
-    .then(response => res.status(200).send(response))
+    .then(response => successResponse(res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getWithType = (req, res, next) => {
-  const { body } = req;
-  const { typeId } = body;
+  const { typeId } = req.body;
   const isCreatedByUser = 0;
   Topic.findAll({ where: { typeId, isCreatedByUser }, attributes: ["id", "topicName"] })
     .then(response => {
-      console.log(response);
-      res.status(200).send(response);
+      //      console.log(response);
+      successResponse(res, response);
     })
     .catch(err => errHandler(err, res));
 };
 exports.addTopic = (req, res, next) => {
-  const { body, user } = req;
+  const { body } = req;
   if (req.user.role === 0) {
     Topic.create(body)
-      .then(result => res.status(200).send(result))
+      .then(result => successResponse(res, result))
       .catch(err => errHandler(err, res));
   } else { res.status(403).send({ message: "you are not adminstrator" }); }
 };
 
 exports.deleteTopic = (req, res, next) => {
-  const { body, user } = req;
-  const { topicId } = body;
+  const { topicId } = req.body;
   const limitDelete = [42, 43, 44, 45, 46, 47, 48];
   let canDelete = true;
   limitDelete.forEach(val => {
-    if (topicId == val)canDelete = false;
+    if (topicId === val)canDelete = false;
   });
   if (req.user.role === 0 && canDelete) {
     Topic.findByPk(topicId)
@@ -41,7 +40,7 @@ exports.deleteTopic = (req, res, next) => {
         await Post.update({ topicId: otherTopicId }, { where: { topicId } });
         return topic.destroy();
       })
-      .then(result => res.status(200).send(result))
+      .then(result => successResponse(res, result))
       .catch(err => errHandler(err, res));
   } else { res.status(403).send({ message: "you are not adminstrator" }); }
 };

@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const Model = require("../db/model/");
 const errHandler = require("../util/errHandler");
 const express = require("express");
 const router = express.Router();

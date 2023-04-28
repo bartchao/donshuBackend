@@ -1,8 +1,10 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
-const { Post, File, Comment, Topic, Type } = Model;
+const { Post, File, Comment, Topic } = Model;
+
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
+const { successResponse, errorResponse } = require("../helper");
 function preProcessData (body, user) {
   const { type, startDate, endDate } = body;
   delete body.createdAt;
@@ -15,9 +17,8 @@ function preProcessData (body, user) {
   return body;
 }
 exports.query = (req, res, next) => {
-  const body = req.body;
-  const { search, isNeed } = body;
-  console.log(search);
+  const { search, isNeed } = req.body;
+  //  console.log(search);
   Post.findAll({
     where: {
       [Op.or]: [
@@ -26,39 +27,35 @@ exports.query = (req, res, next) => {
         { text: { [Op.substring]: search } }
       ],
       isNeed: (isNeed === "true")
-    },
+    }
   })
-    .then(response => res.status(200).send(response))
-    .catch(err => errHandler(err, res));
+    .then(response => succeessResponse(req, res, response))
+    .catch(err => errorResponse(req, res, err.message));
 };
 exports.addComment = (req, res, next) => {
-  const { body, user } = req;
-  const { postId } = body;
-  const comment = body;
-  comment.userId = user.id;
-  const comm = Comment.build(comment);
-  Post.findByPk(postId)
+  const comment = req.body;
+  comment.userId = req.user.id;
+  const newComment = Comment.build(comment);
+  Post.findByPk(comment.postId)
     .then(post => (post === null)
       ? Promise.reject(new Error("Null"))
-      : comm.save())
-    .then(() => res.status(200).send({ succeess: true }))
+      : newComment.save())
+    .then((response) => succeessResponse(req, res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getAllWithType = (req, res, next) => {
-  const body = req.body;
-  const { typeId, isNeed } = body;
+  const { typeId, isNeed } = req.body;
   Post.findAll({
     where: {
       typeId,
       isNeed: (isNeed === "true")
     }
   })
-    .then(response => res.status(200).send(response))
+    .then(response => succeessResponse(req, res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getLimitWithType = (req, res, next) => {
-  const body = req.body;
-  let { typeId, isNeed, offset, limit } = body;
+  let { typeId, isNeed, offset, limit } = req.body;
   offset = parseInt(offset);
   limit = parseInt(limit);
   Post.findAll({
@@ -70,16 +67,15 @@ exports.getLimitWithType = (req, res, next) => {
     offset
   })
     .then(response => {
-      console.log(response);
-      res.status(200).send(response);
+      // console.log(response);
+      successResponse(res, response);
     })
     .catch(err => errHandler(err, res));
 };
 exports.getById = (req, res, next) => {
-  const { body } = req;
-  const { postId } = body;
-  Post.findOne({ where: { id: postId }})
-    .then(response => res.status(200).send(response))
+  const { postId } = req.body;
+  Post.findOne({ where: { id: postId } })
+    .then(response => successResponse(res, response))
     .catch(err => errHandler(err, res));
 };
 async function createPost (body) {
@@ -89,7 +85,7 @@ async function createPost (body) {
         typeId: body.typeId,
         topicName: body.topic.topicName
       };
-      const [topicResult, success] = await Topic.findOrCreate({ where: addCustomTopic, defaults: addCustomTopic, transaction: t });
+      const [topicResult] = await Topic.findOrCreate({ where: addCustomTopic, defaults: addCustomTopic, transaction: t });
       body.topicId = topicResult.id;
     } else if (body.topic.topicId !== undefined) {
       body.topicId = body.topic.topicId;
@@ -103,14 +99,8 @@ async function createPost (body) {
 exports.addNewPost = (req, res, next) => {
   let { body, user } = req;
   body = preProcessData(body, user);
-  console.log(body);
-  try {
-    createPost(body);
-    res.status(200).send({ succeess: true });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
+  // console.log(body);
+  createPost(body).then(post => successResponse(res, post)).catch(err => errHandler(err, res));
 };
 exports.delete = (req, res, next) => {
   const body = req.body;
@@ -141,14 +131,12 @@ exports.update = (req, res, next) => {
           file.postId = post.id;
           return File.create(file);
         });
-        const update = [];
-        update.push(postUpdate);
-        update.push(filesUpdate);
+        const update = [postUpdate, filesUpdate];
         return Promise.all(update);
       } else { return Promise.reject(new Error("Forbbiden")); }
     })
     .then(post => {
-      res.status(200).send({ succeess: true });
+      succeessResponse(res, post);
     })
     .catch(err => errHandler(err, res));
 };

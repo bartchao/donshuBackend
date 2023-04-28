@@ -1,7 +1,7 @@
 const socket_io = require("socket.io");
 const changecore = require("./socket/changecore");
 
-let socketio = {};
+const socketio = {};
 socketio.setSocketio = (server) => {
   console.log("set socketIO ...\n".help);
   socketio.io = socket_io.listen(
@@ -22,12 +22,12 @@ socketio.setSocketio = (server) => {
       handlePreflightRequest: (req, res) => {
         const headers = {
           "Access-Control-Allow-Headers": "api-key",
-          "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
-          "Access-Control-Allow-Credentials": true,
+          "Access-Control-Allow-Origin": req.headers.origin, // or the specific origin you want to give access to,
+          "Access-Control-Allow-Credentials": true
         };
         res.writeHead(200, headers);
         res.end();
-      },
+      }
     }
   );
   const { io } = socketio;

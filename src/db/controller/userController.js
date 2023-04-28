@@ -5,8 +5,8 @@ const getNewToken = require("../../util/token/getNewToken");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
-const Validator = require("validatorjs");
-const { Type, Topic, Post, File, Comment, User, Reply } = Model;
+const { NotFoundError, successResponse } = require("../helper");
+const { User } = Model;
 
 class RegisterFormError extends Error { }
 // Need express-validator
@@ -43,7 +43,7 @@ function getUserPosts (userId, isNeed) {
   return User.findByPk(userId)
     .then((user) =>
       user === null
-        ? Promise.reject(new Error("Null"))
+        ? Promise.reject(new NotFoundError())
         : user.getPosts({
           where: { isNeed: isNeed === "true" }
         })
@@ -58,10 +58,10 @@ exports.searchUser = (req, res, next) => {
     }
   })
     .then((user) => {
-      res.status(200).send(user);
+      successResponse(res, user);
     })
-    .catch(() => {
-      res.status(500).send({ success: false });
+    .catch((err) => {
+      errHandler(res, err);
     });
 };
 // exports.searchUser = (req,res,next)=>{
@@ -85,32 +85,27 @@ exports.searchUser = (req, res, next) => {
 exports.getAllUser = (req, res, next) => {
   User.findAll({ attributes: ["id", "username"] })
     .then((user) => {
-      res.status(200).send(user);
+      successResponse(res, user);
     })
     .catch((err) => {
-      console.error(err);
-      res.status(500).send({ success: false });
+      errHandler(err, res);
     });
 };
 exports.getOtherUser = (req, res, next) => {
   const { id } = req.body;
   User.findByPk(id)
-    .then((user) => {
-      res.status(200).send(user);
-    })
-    .catch(() => {
-      res.status(500).send({ success: false });
+    .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
+    .catch((err) => {
+      errHandler(err, res);
     });
 };
 exports.getOtherUserPosts = (req, res, next) => {
   const { body } = req;
   const { id, isNeed } = body;
   getUserPosts(id, isNeed)
-    .then((posts) => res.status(200).send(posts))
+    .then((posts) => successResponse(res, posts))
     .catch((error) => {
-      console.error(error);
-      const code = 500;
-      res.status(code).send({ succeess: false });
+      errHandler(error, res);
     });
 };
 exports.googleLogin = (req, res, next) => {
@@ -129,7 +124,7 @@ exports.googleLogin = (req, res, next) => {
                 pictureUrl: payloads.picture
               }
             };
-            res.status(200).send(response);
+            successResponse(res, response);
             return;
           }
           const payload = {
@@ -143,7 +138,7 @@ exports.googleLogin = (req, res, next) => {
             success: true,
             token: getNewToken(payload)
           };
-          res.status(200).send(response);
+          successResponse(res, response);
         }
       );
     })
@@ -152,7 +147,7 @@ exports.googleLogin = (req, res, next) => {
 
 // will be Deprecate
 exports.login = (req, res, next) => {
-  console.log("login");
+  // console.log("login");
   const { account } = req.body;
   User.findOne({ where: { account } })
     .then((user) => {
@@ -167,17 +162,15 @@ exports.login = (req, res, next) => {
         success: true,
         token: getNewToken(payload)
       };
-      res.status(200).send(response);
+      successResponse(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
 
-// will Deprecate
 exports.isExist = (req, res, next) => {
   const { account } = req.body;
   User.findOne({ where: { account } })
     .then((user) => {
-      console.log(user);
       const response = {
         success: true,
         txt: user ? "REAPET ACCOUNT" : "NULL"
@@ -193,7 +186,7 @@ exports.register = (req, res, next) => {
   try {
     body = preProcessData(body);
   } catch (err) {
-    console.log("catch err!");
+    // console.log("catch err!");
     const response = {
       success: false,
       msg: err.message
@@ -222,7 +215,7 @@ exports.register = (req, res, next) => {
         success: true,
         token: getNewToken(payload)
       };
-      res.status(200).send(response);
+      successResponse(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
@@ -230,11 +223,9 @@ exports.register = (req, res, next) => {
 exports.getUser = (req, res, next) => {
   const { id } = req.user;
   // console.log('getUser!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.log(typeof (id));
+  // console.log(typeof (id));
   User.findByPk(id)
-    .then((user) => {
-      res.status(200).send(user);
-    })
+    .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
     .catch((err) => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
@@ -245,7 +236,7 @@ exports.update = (req, res, next) => {
   if (body.id === undefined) body.id = tid;
   User.findByPk(body.id)
     .then(async (user) => {
-      if (user === null) return Promise.reject(new Error("Null"));
+      if (user === null) return Promise.reject(new NotFoundError());
       if (user.id === tid) {
         try {
           await User.sequelize.transaction(async (t) => {
@@ -278,16 +269,15 @@ exports.update = (req, res, next) => {
         token: getNewToken(payload),
         user
       };
-      res.status(200).send(response);
+      successResponse(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
 exports.getPosts = (req, res, next) => {
   const { user, body } = req;
   const { isNeed } = body;
-  const { id } = user;
-  getUserPosts(id, isNeed)
-    .then((posts) => res.status(200).send(posts))
+  getUserPosts(user.id, isNeed)
+    .then((posts) => successResponse(res, posts))
     .catch((err) => errHandler(err, res));
 };
 // not use
@@ -300,6 +290,6 @@ exports.delete = (req, res, next) => {
       if (user.id === req.user.id || req.user.role === 0) return user.destroy();
       else return Promise.reject(new Error("Forbbiden"));
     })
-    .then(() => res.status(200).send({ succeess: true }))
+    .then(() => successResponse(res, null))
     .catch((err) => errHandler(err, res));
 };

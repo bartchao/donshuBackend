@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 const Model = require("../model");
 const socketio = require("../../socketio");
 const errHandler = require("../../util/errHandler");
@@ -20,8 +21,8 @@ const cmtInclude = [
 ];
 async function response (cmt, res, action) {
   cmt = await cmt.reload({ include: cmtInclude });
-  if (action == "DELETE") await cmt.destroy();
-  return await Post.findOne({ where: { id: cmt.postId }})
+  if (action === "DELETE") await cmt.destroy();
+  return await Post.findOne({ where: { id: cmt.postId } })
     .then(post => {
       const { io } = socketio;
       const response = {
@@ -35,17 +36,16 @@ async function response (cmt, res, action) {
 }
 exports.addNew = (req, res, next) => {
   const { body, user } = req;
-  const { postId } = body;
   const comment = body;
   comment.userId = user.id;
-  Post.findByPk(postId)
+  Post.findByPk(comment.postId)
     .then(post => (post === null)
-      ? Promise.reject(new Error("Null"))
+      ? Promise.reject(new Error("Not found"))
       : Comment.create(comment))
-    .then(cmt => response(cmt, res, action = "ADD"))
+    .then((cmt) => response(cmt, res, "ADD"))
     .catch(err => {
-      console.log(err);
-      res.status(500).send(err);
+      // console.log(err);
+      errHandler(err, res);
     });
 };
 exports.addNewAndGetComments = (req, res, next) => {
@@ -68,25 +68,23 @@ exports.addNewAndGetComments = (req, res, next) => {
   //     .catch(err =>errHandler(err,res))
 };
 exports.delete = (req, res, next) => {
-  console.log("object");
-  const { body, user } = req;
-  const { id } = body;
+  // console.log("object");
+  const { id } = req.body;
   Comment.findByPk(id)
     .then(comment => {
-      if (comment === null) { return Promise.reject(new Error("Null")); }
-      if (comment.userId === req.user.id || req.user.role === 0) { return response(comment, res, action = "DELETE"); } else { return Promise.reject(new Error("Forbbiden")); }
+      if (comment === null) { return Promise.reject(new Error("Not found")); }
+      if (comment.userId === req.user.id || req.user.role === 0) { return response(comment, res, "DELETE"); } else { return Promise.reject(new Error("Forbbiden")); }
     })
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
-  console.log("!!!!!!!!!!!!!!!!!!!!!!");
-  const { body, user } = req;
-  const { id, text } = body;
+  // console.log("!!!!!!!!!!!!!!!!!!!!!!");
+  const { id, text } = req.body;
   Comment.findByPk(id)
     .then(comment => {
-      if (comment === null) { return Promise.reject(new Error("Null")); }
+      if (comment === null) { return Promise.reject(new Error("Not found")); }
       if (comment.userId === req.user.id || req.user.role === 0) { return comment.update({ text }); } else { return Promise.reject(new Error("Forbbiden")); }
     })
-    .then(cmt => response(cmt, res, action = "UPDATE"))
+    .then(cmt => response(cmt, res, "UPDATE"))
     .catch(err => errHandler(err, res));
 };

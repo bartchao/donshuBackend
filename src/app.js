@@ -7,12 +7,11 @@ const compression = require("compression");
 const helmet = require("helmet");
 const model = require("./db/model/");
 const rateLimit = require("express-rate-limit");
-const winston = require('winston');
+const winston = require("winston");
 const limiter = rateLimit({
   windowMs: 1 * 30 * 1000, // 30 sec
   max: 100 // limit each IP to 100 requests per windowMs
 });
-
 
 //  apply to all requests
 const { checkAPIkey } = require("./middleware/");
@@ -22,23 +21,23 @@ const privateRouter = require("./routes/private");
 
 const logger = winston.createLogger({
   // 當 transport 不指定 level 時 , 使用 info 等級
-  level: 'info',
+  level: "info",
   // 設定輸出格式
   format: winston.format.json(),
   // 設定此 logger 的日誌輸出器
   transports: [
     // 只有 error 等級的錯誤 , 才會將訊息寫到 error.log 檔案中
-    new winston.transports.File({ filename: '../log/error.log', level: 'error' }),
+    new winston.transports.File({ filename: "../log/error.log", level: "error" }),
     // info or 以上的等級的訊息 , 將訊息寫入 combined.log 檔案中
-    new winston.transports.File({ filename: '../log/access.log' }),
-  ],
+    new winston.transports.File({ filename: "../log/access.log" })
+  ]
 });
- 
+
 // 在開發模式時 , 將 log 訊息多輸出到 console 中
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   logger.add(new winston.transports.Console({
     // simple 格式 : `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-    format: winston.format.simple(),
+    format: winston.format.simple()
   }));
 }
 /* const fs = require("fs");
@@ -55,11 +54,9 @@ const accessLogStream = rfs.createStream("access.log", {
 
 const app = express();
 // view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "pug");
 
 app.enable("trust proxy");
-//app.use(logger("common", { stream: accessLogStream }));
+// app.use(logger("common", { stream: accessLogStream }));
 app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -74,7 +71,6 @@ app.use(checkAPIkey);
 
 app.use("/public", publicRouter);
 app.use("/private", privateRouter);
-
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
