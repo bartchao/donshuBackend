@@ -2,22 +2,66 @@ const Model = require("../model");
 const { Topic, Post } = Model;
 const errHandler = require("../../util/errHandler");
 const { successResponse } = require("../helper");
+
 exports.getAll = (req, res, next) => {
+  // #swagger.tags = ['Topic']
+
   Topic.findAll({ attributes: ["id", "topicName"] })
     .then(response => successResponse(res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getWithType = (req, res, next) => {
+  // #swagger.tags = ['Topic']
+  // #swagger.summary='取得Type中擁有的Topic'
+  /* #swagger.requestBody = {
+            required: false,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            typeId: {
+                                type: "integer"
+                            }
+                        },
+                        required: ["typeId"]
+                    }
+                }
+              }
+    } */
   const { typeId } = req.body;
   const isCreatedByUser = 0;
   Topic.findAll({ where: { typeId, isCreatedByUser }, attributes: ["id", "topicName"] })
     .then(response => {
-      //      console.log(response);
+      /* #swagger.responses[200] = {
+                description: '回傳與該Type有關之Topic',
+                schema: { $ref: "#/definitions/Topic" }
+            } */
       successResponse(res, response);
     })
     .catch(err => errHandler(err, res));
 };
 exports.addTopic = (req, res, next) => {
+  // #swagger.tags = ['Topic']
+/* #swagger.requestBody = {
+            required: true,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            typeId: {
+                                type: "integer"
+                            },
+                            topicName: {
+                              type: "string"
+                            }
+                        },
+                        required: ["typeId","topicName"]
+                    }
+                }
+              }
+    } */
   const { body } = req;
   if (req.user.role === 0) {
     Topic.create(body)
@@ -27,6 +71,23 @@ exports.addTopic = (req, res, next) => {
 };
 
 exports.deleteTopic = (req, res, next) => {
+  // #swagger.tags = ['Topic']
+  /* #swagger.requestBody = {
+            required: true,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            topicId: {
+                                type: "integer"
+                            }
+                        },
+                        required: ["topicId"]
+                    }
+                }
+              }
+    } */
   const { topicId } = req.body;
   const limitDelete = [42, 43, 44, 45, 46, 47, 48];
   let canDelete = true;

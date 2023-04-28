@@ -5,7 +5,6 @@ const { checkToken, checkTokExp, ImgUpload, checkAPKversion } = Middleware;
 const Controller = require("../db/controller/");
 const {
   postController,
-  typeController,
   topicController,
   userController,
   commentController,
@@ -13,8 +12,8 @@ const {
 } = Controller;
 // for debug
 router.use((req, res, next) => { // just for debug
-  //console.log(req.headers);
-  //console.log(req.body);
+  // console.log(req.headers);
+  // console.log(req.body);
   next();
 });
 

@@ -4,7 +4,6 @@ const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
 const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
-const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
 const { NotFoundError, successResponse } = require("../helper");
 const { User } = Model;
 
@@ -40,6 +39,8 @@ function preProcessData (body) {
   return body;
 }
 function getUserPosts (userId, isNeed) {
+  // #swagger.tags = ['Users']
+
   return User.findByPk(userId)
     .then((user) =>
       user === null
@@ -50,6 +51,8 @@ function getUserPosts (userId, isNeed) {
     );
 }
 exports.searchUser = (req, res, next) => {
+  // #swagger.tags = ['Users']
+
   const { search } = req.body;
   User.findAll({
     attributes: ["id", "username", "pictureUrl"],
@@ -83,6 +86,25 @@ exports.searchUser = (req, res, next) => {
 // }
 
 exports.getAllUser = (req, res, next) => {
+  /* #swagger.tags = ['Users']
+     #swagger.summary = '取得所有User'
+  */
+  /*  #swagger.requestBody = {
+            required: false,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            search: {
+                                type: "string"
+                            }
+                        },
+                        required: ["search"]
+                    }
+                }
+              }
+        } */
   User.findAll({ attributes: ["id", "username"] })
     .then((user) => {
       successResponse(res, user);
@@ -92,6 +114,30 @@ exports.getAllUser = (req, res, next) => {
     });
 };
 exports.getOtherUser = (req, res, next) => {
+  /* #swagger.tags = ['Users']
+     #swagger.summary = '取得某User資料'
+  */
+
+  /*  #swagger.requestBody = {
+            required: true,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            id: {
+                                type: "string"
+                            }
+                        },
+                        required: ["id"]
+                    }
+                }
+              }
+        } */
+  /* #swagger.responses[200] = {
+            description: 'Found Other User',
+            schema: { $ref: '#/definitions/User' }
+    } */
   const { id } = req.body;
   User.findByPk(id)
     .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
@@ -100,6 +146,8 @@ exports.getOtherUser = (req, res, next) => {
     });
 };
 exports.getOtherUserPosts = (req, res, next) => {
+  // #swagger.tags = ['Users']
+
   const { body } = req;
   const { id, isNeed } = body;
   getUserPosts(id, isNeed)
@@ -108,66 +156,9 @@ exports.getOtherUserPosts = (req, res, next) => {
       errHandler(error, res);
     });
 };
-exports.googleLogin = (req, res, next) => {
-  const { googleIdToken } = req.body;
-  verifyGoogleToken(googleIdToken)
-    .then((payloads) => {
-      return User.findOne({ where: { account: payloads.email } }).then(
-        (user) => {
-          if (!user) {
-            const response = {
-              success: false,
-              msg: "NULL ACCOUNT",
-              payload: {
-                account: payloads.email,
-                username: payloads.name,
-                pictureUrl: payloads.picture
-              }
-            };
-            successResponse(res, response);
-            return;
-          }
-          const payload = {
-            id: user.id,
-            account: user.account,
-            username: user.username,
-            role: user.role,
-            pictureUrl: user.pictureUrl
-          };
-          const response = {
-            success: true,
-            token: getNewToken(payload)
-          };
-          successResponse(res, response);
-        }
-      );
-    })
-    .catch((err) => errHandler(err, res));
-};
-
-// will be Deprecate
-exports.login = (req, res, next) => {
-  // console.log("login");
-  const { account } = req.body;
-  User.findOne({ where: { account } })
-    .then((user) => {
-      const payload = {
-        id: user.id,
-        account: user.account,
-        username: user.username,
-        role: user.role,
-        pictureUrl: user.pictureUrl
-      };
-      const response = {
-        success: true,
-        token: getNewToken(payload)
-      };
-      successResponse(res, response);
-    })
-    .catch((err) => errHandler(err, res));
-};
 
 exports.isExist = (req, res, next) => {
+  // #swagger.deprecated = true
   const { account } = req.body;
   User.findOne({ where: { account } })
     .then((user) => {
@@ -180,55 +171,22 @@ exports.isExist = (req, res, next) => {
     .catch((err) => errHandler(err, res));
 };
 
-exports.register = (req, res, next) => {
-  let { body } = req;
-  const { googleIdToken } = body;
-  try {
-    body = preProcessData(body);
-  } catch (err) {
-    // console.log("catch err!");
-    const response = {
-      success: false,
-      msg: err.message
-    };
-    res.status(400).send(response);
-  }
-  body.role = 1;
-
-  verifyGoogleToken(googleIdToken)
-    .then(({ email }) => {
-      body.account = email;
-      delete body.googleIdToken;
-    })
-    .then(() =>
-      User.findOrCreate({ where: { account: body.account }, defaults: body })
-    )
-    .then(([user, created]) => {
-      console.log("creater");
-      const payload = {
-        id: user.id,
-        account: user.account,
-        username: user.username,
-        role: user.role
-      };
-      const response = {
-        success: true,
-        token: getNewToken(payload)
-      };
-      successResponse(res, response);
-    })
-    .catch((err) => errHandler(err, res));
-};
-
 exports.getUser = (req, res, next) => {
+  /* #swagger.tags = ['Users']
+     #swagger.summary = '取得登入的User資料'
+  */
+  /* #swagger.responses[200] = {
+            description: 'Current User Data',
+            schema: { $ref: '#/definitions/User' }
+    } */
   const { id } = req.user;
-  // console.log('getUser!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  // console.log(typeof (id));
   User.findByPk(id)
     .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
     .catch((err) => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
+  // #swagger.tags = ['Users']
+
   // console.log("!!!!!!!!!!!!!!!!!!!!!!");
   let { body, user } = req;
   const tid = user.id;
@@ -274,6 +232,25 @@ exports.update = (req, res, next) => {
     .catch((err) => errHandler(err, res));
 };
 exports.getPosts = (req, res, next) => {
+  /* #swagger.tags = ['Users']
+     #swagger.summary = '取得登入的User擁有的發文'
+     #swagger.requestBody = {
+      required: true,
+      "@content": {
+          "application/json": {
+              schema: {
+                  type: "object",
+                  properties: {
+                      isNeed: {
+                          type: "boolean"
+                      }
+                  },
+                  required: ["isNeed"]
+              }
+          }
+        }
+      }
+  */
   const { user, body } = req;
   const { isNeed } = body;
   getUserPosts(user.id, isNeed)
@@ -282,6 +259,8 @@ exports.getPosts = (req, res, next) => {
 };
 // not use
 exports.delete = (req, res, next) => {
+  // #swagger.tags = ['Users']
+  // #swagger.deprecated = true
   const body = req.body;
   const pk = body.id;
   User.findByPk(pk)
