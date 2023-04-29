@@ -6,7 +6,7 @@ const { postController, typeController, topicController, authController } = Cont
 const postValidator = require("../db/validator/post.validator");
 const topicValidator = require("../db/validator/topic.validator");
 const userValidator = require("../db/validator/user.validator");
-const { errHandler } = require("../util/errHandler");
+const { errHandler } = require("../helper/errHandler");
 //  post
 router.post("/post/getAllWithType", validate(postValidator.getAllWithType), postController.getAllWithType);
 router.post("/post/getById", validate(postValidator.getById), postController.getById);

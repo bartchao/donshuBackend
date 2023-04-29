@@ -2,8 +2,8 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
-const errHandler = require("../../util/errHandler");
-const { NotFoundError, successResponse, responseWithData } = require("../helper");
+const { errHandler, NotFoundError } = require("../../helper/errHandler");
+const { successResponse, responseWithData } = require("../../helper/response");
 const { User } = Model;
 
 class RegisterFormError extends Error { }

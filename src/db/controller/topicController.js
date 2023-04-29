@@ -1,7 +1,7 @@
 const Model = require("../model");
 const { Topic, Post } = Model;
-const errHandler = require("../../util/errHandler");
-const { responseWithData } = require("../helper");
+const errHandler = require("../../helper/errHandler");
+const { responseWithData } = require("../../helper/response");
 
 exports.getAll = (req, res, next) => {
   // #swagger.tags = ['Topic']

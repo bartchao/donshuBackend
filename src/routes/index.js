@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const errHandler = require("../util/errHandler");
+const { errHandler } = require("../helper/errHandler.js");
 const express = require("express");
 const router = express.Router();
 

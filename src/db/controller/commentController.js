@@ -1,7 +1,7 @@
 /* eslint-disable no-return-assign */
 const Model = require("../model");
 const socketio = require("../../socketio");
-const errHandler = require("../../util/errHandler");
+const errHandler = require("../../helper/errHandler");
 const { Post, Comment, User, Reply } = Model;
 const cmtInclude = [
   {

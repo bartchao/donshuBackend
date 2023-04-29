@@ -7,7 +7,7 @@ const postValidator = require("../db/validator/post.validator");
 const topicValidator = require("../db/validator/topic.validator");
 const userValidator = require("../db/validator/user.validator");
 const Controller = require("../db/controller/");
-const { errHandler } = require("../util/errHandler");
+const { errHandler } = require("../helper/errHandler");
 const {
   postController,
   topicController,

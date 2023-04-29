@@ -3,7 +3,7 @@ const { ValidationError } = require("express-validation");
 
 const NotFoundError = class NotFoundError extends Error {
   statusCode = 404;
-  message = "URL Not found";
+  message = "Resource Not found";
 };
 const ForbiddenError = class ForbiddenError extends Error {
   statusCode = 403;
@@ -25,7 +25,7 @@ const logger = createLogger({
   ),
   transports: [
     // 只有 error 等級的錯誤 , 才會將訊息寫到 error.log 檔案中
-    new transports.File({ filename: path.join(__dirname, "log", "error.log"), level: "error" }),
+    new transports.File({ filename: path.join(__dirname, "../../log", "error.log"), level: "error" }),
     // info or 以上的等級的訊息 , 將訊息寫入 combined.log 檔案中
     new transports.Console({ level: "error" })
   ]

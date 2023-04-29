@@ -1,8 +1,8 @@
 const { Post, Comment, User, Reply } = require("../model");
 // const { cmtInclude, rpyInclude } = require("../helper");
-const { errHandler, NotFoundError, ForbiddenError } = require("../../util/errHandler");
+const { errHandler, NotFoundError, ForbiddenError } = require("../../helper/errHandler");
 const socketio = require("../../socketio");
-const { responseWithData } = require("../helper");
+const { responseWithData } = require("../../helper/response");
 const io = socketio.getSocketio();
 const rpyInclude = [
   {
