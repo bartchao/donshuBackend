@@ -2,6 +2,7 @@
 const Model = require("../model");
 const socketio = require("../../socketio");
 const errHandler = require("../../helper/errHandler");
+const { responseWithData } = require("../../helper/response");
 const { Post, Comment, User, Reply } = Model;
 const cmtInclude = [
   {
@@ -30,7 +31,7 @@ async function response (cmt, res, action) {
         comment: cmt,
         post
       };
-      res.status(200).send(response);
+      responseWithData(res, response);
       io.emit("change", response);
     });
 }
@@ -41,7 +42,7 @@ exports.addNew = (req, res, next) => {
   comment.userId = user.id;
   Post.findByPk(comment.postId)
     .then(post => (post === null)
-      ? Promise.reject(new Error("Not found"))
+      ? Promise.reject(new errHandler.NotFoundError())
       : Comment.create(comment))
     .then((cmt) => response(cmt, res, "ADD"))
     .catch(err => {
@@ -51,7 +52,7 @@ exports.addNew = (req, res, next) => {
 };
 exports.addNewAndGetComments = (req, res, next) => {
   // #swagger.tags = ['Comment']
-
+  // #swagger.deprecated = true
   // const {body,user} = req;
   // const {postId}=body;
   // let comment = body;
@@ -91,8 +92,8 @@ exports.delete = (req, res, next) => {
   const { id } = req.body;
   Comment.findByPk(id)
     .then(comment => {
-      if (comment === null) { return Promise.reject(new Error("Not found")); }
-      if (comment.userId === req.user.id || req.user.role === 0) { return response(comment, res, "DELETE"); } else { return Promise.reject(new Error("Forbbiden")); }
+      if (comment === null) { return Promise.reject(new errHandler.NotFoundError()); }
+      if (comment.userId === req.user.id || req.user.role === 0) { return response(comment, res, "DELETE"); } else { return Promise.reject(new errHandler.ForbiddenError()); }
     })
     .catch(err => errHandler(err, res));
 };
@@ -121,7 +122,7 @@ exports.update = (req, res, next) => {
   Comment.findByPk(id)
     .then(comment => {
       if (comment === null) { return Promise.reject(new Error("Not found")); }
-      if (comment.userId === req.user.id || req.user.role === 0) { return comment.update({ text }); } else { return Promise.reject(new Error("Forbbiden")); }
+      if (comment.userId === req.user.id || req.user.role === 0) { return comment.update({ text }); } else { return Promise.reject(new errHandler.ForbiddenError()); }
     })
     .then(cmt => response(cmt, res, "UPDATE"))
     .catch(err => errHandler(err, res));

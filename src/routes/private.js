@@ -3,9 +3,7 @@ const router = express.Router();
 const Middleware = require("../middleware/");
 const { checkToken, checkTokExp, ImgUpload, checkAPKversion } = Middleware;
 const { validate } = require("express-validation");
-const postValidator = require("../db/validator/post.validator");
-const topicValidator = require("../db/validator/topic.validator");
-const userValidator = require("../db/validator/user.validator");
+const { postValidator, topicValidator, userValidator } = require("../db/validator/index");
 const Controller = require("../db/controller/");
 const { errHandler } = require("../helper/errHandler");
 const {

@@ -74,7 +74,7 @@ exports.delete = (req, res, next) => {
   Reply.findByPk(id)
     .then(rpy => {
       if (rpy === null) { return Promise.reject(new NotFoundError()); }
-      if (rpy.userId === req.user.id || req.user.role === 0) { return response(rpy, res, "DELETE"); } else { return Promise.reject(new Error("Forbbiden")); }
+      if (rpy.userId === req.user.id || req.user.role === 0) { return response(rpy, res, "DELETE"); } else { return Promise.reject(new ForbiddenError()); }
     })
     .catch(err => errHandler(err, res));
 };

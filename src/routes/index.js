@@ -11,8 +11,8 @@ router.get("/uploads/:upload", function (req, res) {
   console.log(req.params.upload);
   try {
     const img = fs.readFileSync(path.join(__dirname, "../../uploads/") + file);
-    console.log("!!!!");
-    console.log(img);
+    // console.log("!!!!");
+    // console.log(img);
     res.writeHead(200, { "Content-Type": "image/*" });
     res.end(img, "binary");
   } catch (err) {
@@ -27,8 +27,8 @@ router.get("/apk/:apkFile", function (req, res) {
   console.log(req.params.apkFile);
   try {
     const apk = fs.readFileSync(path.join(dirpath, file));
-    console.log("!!!!");
-    console.log(apk);
+    // console.log("!!!!");
+    // console.log(apk);
     res.writeHead(200, { "Content-Type": "application/vnd.android.package-archive" });
     res.end(apk);
   } catch (err) {

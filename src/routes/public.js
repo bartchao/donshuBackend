@@ -3,9 +3,8 @@ const router = express.Router();
 const { validate } = require("express-validation");
 const Controller = require("../db/controller/");
 const { postController, typeController, topicController, authController } = Controller;
-const postValidator = require("../db/validator/post.validator");
-const topicValidator = require("../db/validator/topic.validator");
-const userValidator = require("../db/validator/user.validator");
+const { postValidator, topicValidator, userValidator } = require("../db/validator/index");
+
 const { errHandler } = require("../helper/errHandler");
 //  post
 router.post("/post/getAllWithType", validate(postValidator.getAllWithType), postController.getAllWithType);

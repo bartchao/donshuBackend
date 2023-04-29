@@ -35,7 +35,7 @@ const upload = multer(setting).array("upload", 8);
 // exports.getMulter =
 
 module.exports = (req, res, next) => {
-  console.log("!!!!!!!!!!!!!!!");
+  // console.log("!!!!!!!!!!!!!!!");
   console.log(req.body);
   upload(req, res, err => {
     if (err instanceof multer.MulterError) {

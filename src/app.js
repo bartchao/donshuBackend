@@ -1,14 +1,12 @@
 const createError = require("http-errors");
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const helmet = require("helmet");
 const model = require("./db/model/");
 const rateLimit = require("express-rate-limit");
 const winston = require("winston");
-const { ValidationError } = require("express-validation");
 const limiter = rateLimit({
   windowMs: 1 * 30 * 1000, // 30 sec
   max: 100 // limit each IP to 100 requests per windowMs

@@ -3,28 +3,16 @@ const getNewToken = require("../../util/token/getNewToken");
 const errHandler = require("../../helper/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
 const checkValidDate = require("../../util/checkValidDate");
-const { NotFoundError, successResponse, responseWithData } = require("../../helper/response");
+const { NotFoundError, responseWithData } = require("../../helper/response");
 const { User } = Model;
 class RegisterFormError extends Error { }
 
 function preProcessData (body) {
   try {
-    const { password, gender, birthday, introduction, phone, pictureUrl, hasUserTicket } = body;
-    if (typeof hasUserTicket !== "boolean") {
-      throw new RegisterFormError("UserTicket cannot be other than true or false");
-    }
-    if (phone === null) {
-      throw new RegisterFormError("Phone cannot be null");
-    }
-    if (gender === null) {
-      throw new RegisterFormError("Gender cannot be null");
-    }
-    if (birthday == null) {
-      throw new RegisterFormError("Birthday cannot be null");
-    } else if (checkValidDate(new Date(birthday))) {
+    const { birthday, introduction, pictureUrl } = body;
+    if (checkValidDate(new Date(birthday))) {
       throw new RegisterFormError("Wrong format of birthday");
     } else body.birthday = new Date(birthday);
-    if (password === null) delete body.password; // 沒有這個欄位
     if (pictureUrl === null) delete body.pictureUrl;
     if (introduction === null) delete body.introduction;
   } catch (error) {
