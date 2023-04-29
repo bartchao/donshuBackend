@@ -2,31 +2,16 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
-const checkValidDate = require("../../util/checkValidDate");
 const errHandler = require("../../util/errHandler");
-const { NotFoundError, successResponse } = require("../helper");
+const { NotFoundError, successResponse, responseWithData } = require("../helper");
 const { User } = Model;
 
 class RegisterFormError extends Error { }
 // Need express-validator
 function preProcessData (body) {
   try {
-    const { password, gender, birthday, introduction, phone, pictureUrl, hasUserTicket } = body;
-    if (typeof hasUserTicket !== "boolean") {
-      throw new RegisterFormError("UserTicket cannot be other than true or false");
-    }
-    if (phone === null) {
-      throw new RegisterFormError("Phone cannot be null");
-    }
-    if (gender === null) {
-      throw new RegisterFormError("Gender cannot be null");
-    }
-    if (birthday == null) {
-      throw new RegisterFormError("Birthday cannot be null");
-    } else if (checkValidDate(new Date(birthday))) {
-      throw new RegisterFormError("Wrong format of birthday");
-    } else body.birthday = new Date(birthday);
-    if (password === null) delete body.password; // 沒有這個欄位
+    const { introduction, pictureUrl } = body;
+
     if (pictureUrl === null) delete body.pictureUrl;
     if (introduction === null) delete body.introduction;
   } catch (error) {
@@ -50,9 +35,24 @@ function getUserPosts (userId, isNeed) {
         })
     );
 }
-exports.searchUser = (req, res, next) => {
+exports.searchUserName = (req, res, next) => {
   // #swagger.tags = ['Users']
-
+  /*  #swagger.requestBody = {
+            required: false,
+            "@content": {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            search: {
+                                type: "string"
+                            }
+                        },
+                        required: ["search"]
+                    }
+                }
+              }
+        } */
   const { search } = req.body;
   User.findAll({
     attributes: ["id", "username", "pictureUrl"],
@@ -61,7 +61,7 @@ exports.searchUser = (req, res, next) => {
     }
   })
     .then((user) => {
-      successResponse(res, user);
+      responseWithData(res, user);
     })
     .catch((err) => {
       errHandler(res, err);
@@ -89,25 +89,9 @@ exports.getAllUser = (req, res, next) => {
   /* #swagger.tags = ['Users']
      #swagger.summary = '取得所有User'
   */
-  /*  #swagger.requestBody = {
-            required: false,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            search: {
-                                type: "string"
-                            }
-                        },
-                        required: ["search"]
-                    }
-                }
-              }
-        } */
-  User.findAll({ attributes: ["id", "username"] })
+  User.findAll({ attributes: ["id", "username", "pictureUrl"] })
     .then((user) => {
-      successResponse(res, user);
+      responseWithData(res, user);
     })
     .catch((err) => {
       errHandler(err, res);
@@ -140,7 +124,7 @@ exports.getOtherUser = (req, res, next) => {
     } */
   const { id } = req.body;
   User.findByPk(id)
-    .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
+    .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
     .catch((err) => {
       errHandler(err, res);
     });
@@ -151,7 +135,7 @@ exports.getOtherUserPosts = (req, res, next) => {
   const { body } = req;
   const { id, isNeed } = body;
   getUserPosts(id, isNeed)
-    .then((posts) => successResponse(res, posts))
+    .then((posts) => responseWithData(res, posts))
     .catch((error) => {
       errHandler(error, res);
     });
@@ -171,7 +155,7 @@ exports.isExist = (req, res, next) => {
     .catch((err) => errHandler(err, res));
 };
 
-exports.getUser = (req, res, next) => {
+exports.getLoggedInUser = (req, res, next) => {
   /* #swagger.tags = ['Users']
      #swagger.summary = '取得登入的User資料'
   */
@@ -181,7 +165,7 @@ exports.getUser = (req, res, next) => {
     } */
   const { id } = req.user;
   User.findByPk(id)
-    .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
+    .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
     .catch((err) => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
@@ -227,7 +211,7 @@ exports.update = (req, res, next) => {
         token: getNewToken(payload),
         user
       };
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
@@ -254,7 +238,7 @@ exports.getPosts = (req, res, next) => {
   const { user, body } = req;
   const { isNeed } = body;
   getUserPosts(user.id, isNeed)
-    .then((posts) => successResponse(res, posts))
+    .then((posts) => responseWithData(res, posts))
     .catch((err) => errHandler(err, res));
 };
 // not use
@@ -269,6 +253,6 @@ exports.delete = (req, res, next) => {
       if (user.id === req.user.id || req.user.role === 0) return user.destroy();
       else return Promise.reject(new Error("Forbbiden"));
     })
-    .then(() => successResponse(res, null))
+    .then(() => successResponse(res))
     .catch((err) => errHandler(err, res));
 };

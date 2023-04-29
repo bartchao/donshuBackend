@@ -1,6 +1,18 @@
 
-const NotFoundError = class NotFoundError extends Error {};
-const ForbiddenError = class ForbiddenError extends Error {};
+const { ValidationError } = require("express-validation");
+
+const NotFoundError = class NotFoundError extends Error {
+  statusCode = 404;
+  message = "URL Not found";
+};
+const ForbiddenError = class ForbiddenError extends Error {
+  statusCode = 403;
+  message = "Forbidden";
+};
+const ResourceNotFounndError = class ResourceNotFounndError extends Error {
+  statusCode = 409;
+  message = "Resource Not Found";
+};
 const path = require("path");
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, prettyPrint } = format;
@@ -19,22 +31,25 @@ const logger = createLogger({
   ]
 });
 
-module.exports = (error, res) => {
-  const { message, stack } = error;
-  let { user, originalUrl } = res.req;
-  if (user === undefined) {
-    user = "Public";
-  }
-  logger.error(user + "URL:" + originalUrl);
-  logger.error(message);
-  logger.error(stack);
+module.exports.errHandler = (error, res) => {
   if (error instanceof NotFoundError) {
-    res.status(404).send({ Error: "Not Found" });
+    res.status(error.statusCode).send({ Error: error.message });
   } else if (error instanceof ForbiddenError) {
-    res.status(403).send({ Error: "Forbidden" });
+    res.status(error.statusCode).send({ Error: error.message });
+  } else if (error instanceof ValidationError) {
+    res.status(error.statusCode).send(error);
   } else {
     res.status(500).send({ Error: "Internal Server Error" });
   }
+  const { user, originalUrl } = res.req;
+  const errorLog = {
+    url: originalUrl,
+    user: user === undefined ? "Public" : user.id,
+    body: res.req.body,
+    error
+  };
+  logger.error(errorLog);
 };
 module.exports.NotFoundError = NotFoundError;
 module.exports.ForbiddenError = ForbiddenError;
+module.exports.ResourceNotFounndError = ResourceNotFounndError;

@@ -9,7 +9,10 @@ module.exports.getAllWithType = {
 module.exports.query = {
   body: Joi.object({
     search: Joi.string().required(),
-    isNeed: Joi.boolean().required()
+    isNeed: Joi.boolean().optional(),
+    typeId: Joi.number().optional(),
+    limit: Joi.number().optional(),
+    offset: Joi.number().optional()
   })
 };
 module.exports.getLimitWithType = {
@@ -22,6 +25,6 @@ module.exports.getLimitWithType = {
 };
 module.exports.getById = {
   body: Joi.object({
-    postId: Joi.number().required()
+    postId: Joi.string().required()
   })
 };

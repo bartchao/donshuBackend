@@ -7,12 +7,12 @@ module.exports.searchUserName = {
 };
 module.exports.getById = {
   body: Joi.object({
-    id: Joi.string().required()
+    id: Joi.number().required()
   })
 };
 module.exports.getOtherUserPosts = {
   body: Joi.object({
-    id: Joi.string().required(),
+    id: Joi.number().required(),
     isNeed: Joi.boolean().required()
   })
 };

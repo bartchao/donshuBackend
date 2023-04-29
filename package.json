@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "set NODE_ENV=development && node ./bin/www",
-    "swagger" : "node ./swagger.js"
+    "swagger": "node ./swagger.js"
   },
   "dependencies": {
     "colors": "^1.3.3",

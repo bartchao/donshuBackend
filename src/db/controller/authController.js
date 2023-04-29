@@ -3,7 +3,7 @@ const getNewToken = require("../../util/token/getNewToken");
 const errHandler = require("../../util/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
 const checkValidDate = require("../../util/checkValidDate");
-const { NotFoundError, successResponse } = require("../helper");
+const { NotFoundError, successResponse, responseWithData } = require("../helper");
 const { User } = Model;
 class RegisterFormError extends Error { }
 
@@ -46,7 +46,7 @@ exports.getUser = (req, res, next) => {
       } */
   const { id } = req.user;
   User.findByPk(id)
-    .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
+    .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
     .catch((err) => errHandler(err, res));
 };
 exports.register = (req, res, next) => {
@@ -132,7 +132,7 @@ exports.register = (req, res, next) => {
                 token:'<Token for every request use>'
               }
           } */
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
@@ -152,7 +152,7 @@ exports.login = (req, res, next) => {
         success: true,
         token: getNewToken(payload)
       };
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
@@ -202,7 +202,7 @@ exports.googleLogin = (req, res, next) => {
                 token:'<Token for every request use>'
               }
           } */
-            successResponse(res, response);
+            responseWithData(res, response);
           }
         }
       );

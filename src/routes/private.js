@@ -5,7 +5,9 @@ const { checkToken, checkTokExp, ImgUpload, checkAPKversion } = Middleware;
 const { validate } = require("express-validation");
 const postValidator = require("../db/validator/post.validator");
 const topicValidator = require("../db/validator/topic.validator");
+const userValidator = require("../db/validator/user.validator");
 const Controller = require("../db/controller/");
+const { errHandler } = require("../util/errHandler");
 const {
   postController,
   topicController,
@@ -13,12 +15,6 @@ const {
   commentController,
   replyController
 } = Controller;
-// for debug
-router.use((req, res, next) => { // just for debug
-  // console.log(req.headers);
-  // console.log(req.body);
-  next();
-});
 
 router.post("/checkTokExp", checkTokExp);
 router.use(checkToken);
@@ -38,19 +34,20 @@ router.post("/comment/addReply", replyController.addNew);
 router.post("/reply/delete", replyController.delete);
 router.post("/reply/update", replyController.update);
 // user
-router.post("/user/getPosts", userController.getPosts);
-router.post("/user/getUser", userController.getUser);
+router.post("/user/getPosts", validate(userValidator.getPosts), userController.getPosts);
+router.post("/user/getUser", userController.getLoggedInUser);
 router.post("/user/update", userController.update);
-router.post("/user/getOtherUser", userController.getOtherUser);
-router.post("/user/getUserPosts", userController.getOtherUserPosts);
+router.post("/user/getOtherUser", validate(userValidator.getById), userController.getOtherUser);
+router.post("/user/getUserPosts", validate(userValidator.getOtherUserPosts), userController.getOtherUserPosts);
 router.post("/user/getAllUsername", userController.getAllUser);
-router.post("/user/searchUser", userController.searchUser);
+router.post("/user/searchUser", validate(userValidator.searchUserName), userController.searchUserName);
 // topic
-router.post("/topic/addTopic", topicController.addTopic);
+router.post("/topic/addTopic", validate(topicValidator.addTopic), topicController.addTopic);
 router.post("/topic/deleteTopic", validate(topicValidator.getById), topicController.deleteTopic);
 
 // router.post('/user/delete',userController.delete);
 
 // uploadImg
 router.post("/uploadImg", ImgUpload);
+router.use((err, req, res, next) => { errHandler(err, res); });
 module.exports = router;

@@ -1,13 +1,13 @@
 const Model = require("../model");
 const { Topic, Post } = Model;
 const errHandler = require("../../util/errHandler");
-const { successResponse } = require("../helper");
+const { responseWithData } = require("../helper");
 
 exports.getAll = (req, res, next) => {
   // #swagger.tags = ['Topic']
 
   Topic.findAll({ attributes: ["id", "topicName"] })
-    .then(response => successResponse(res, response))
+    .then(response => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getWithType = (req, res, next) => {
@@ -37,11 +37,11 @@ exports.getWithType = (req, res, next) => {
                 description: '回傳與該Type有關之Topic',
                 schema: { $ref: "#/definitions/Topic" }
             } */
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch(err => errHandler(err, res));
 };
-exports.addTopic = (req, res, next) => {
+exports.addTopic = async (req, res, next) => {
   // #swagger.tags = ['Topic']
 /* #swagger.requestBody = {
             required: true,
@@ -63,11 +63,25 @@ exports.addTopic = (req, res, next) => {
               }
     } */
   const { body } = req;
+  // role = 0 為管理員
   if (req.user.role === 0) {
-    Topic.create(body)
-      .then(result => successResponse(res, result))
-      .catch(err => errHandler(err, res));
-  } else { res.status(403).send({ message: "you are not adminstrator" }); }
+    body.isCreatedByUser = false;
+  } else {
+    body.isCreatedByUser = true;
+  }
+  try {
+    const [topic, created] = await Topic.findOrCreate({
+      where: { typeId: body.typeId, topicName: body.topicName },
+      defaults: {
+        typeId: body.typeId,
+        topicName: body.topicName,
+        isCreatedByUser: body.isCreatedByUser
+      }
+    });
+    responseWithData(res, topic);
+  } catch (err) {
+    errHandler(err, res);
+  }
 };
 
 exports.deleteTopic = (req, res, next) => {
@@ -101,7 +115,7 @@ exports.deleteTopic = (req, res, next) => {
         await Post.update({ topicId: otherTopicId }, { where: { topicId } });
         return topic.destroy();
       })
-      .then(result => successResponse(res, result))
+      .then(result => responseWithData(res, result))
       .catch(err => errHandler(err, res));
-  } else { res.status(403).send({ message: "you are not adminstrator" }); }
+  } else { errHandler(new errHandler.ForbiddenError(), res); }
 };

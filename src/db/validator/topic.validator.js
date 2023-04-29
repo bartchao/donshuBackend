@@ -10,3 +10,9 @@ module.exports.getById = {
     topicId: Joi.string().required()
   })
 };
+module.exports.addTopic = {
+  body: Joi.object({
+    typeId: Joi.number().required(),
+    topicName: Joi.string().required()
+  })
+};

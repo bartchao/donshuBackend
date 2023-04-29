@@ -3,9 +3,9 @@ const Model = require("../model");
 const { Post, File, Comment, Topic } = Model;
 
 const checkValidDate = require("../../util/checkValidDate");
-const errHandler = require("../../util/errHandler");
+const { errHandler, ForbiddenError, NotFoundError } = require("../../util/errHandler");
 
-const { successResponse, errorResponse } = require("../helper");
+const { responseWithData, errorResponse, successResponse } = require("../helper");
 function preProcessData (body, user) {
   const { type, startDate, endDate } = body;
   delete body.createdAt;
@@ -38,7 +38,7 @@ exports.query = (req, res, next) => {
                             limit: {
                               type: "integer"
                             },
-                            offser: {
+                            offset: {
                               type: "integer"
                             }
                         },
@@ -51,18 +51,21 @@ exports.query = (req, res, next) => {
       schema: { $ref: "#/definitions/Post" }
     } */
   const { search, isNeed } = req.body;
-  //  console.log(search);
-  Post.findAll({
+  const query = {
     where: {
       [Op.or]: [
       // LIKE '%search%'
         { title: { [Op.substring]: search } },
         { text: { [Op.substring]: search } }
-      ],
-      isNeed: (isNeed === "true")
+      ]
     }
-  })
-    .then(response => successResponse(req, res, response))
+  };
+  if (isNeed !== undefined) {
+    query.where.isNeed = isNeed;
+  }
+  //  console.log(search);
+  Post.findAll(query)
+    .then(response => responseWithData(res, response))
     .catch(err => errorResponse(req, res, err.message));
 };
 exports.addComment = (req, res, next) => {
@@ -72,9 +75,9 @@ exports.addComment = (req, res, next) => {
   const newComment = Comment.build(comment);
   Post.findByPk(comment.postId)
     .then(post => (post === null)
-      ? Promise.reject(new Error("Null"))
+      ? Promise.reject(new NotFoundError())
       : newComment.save())
-    .then((response) => successResponse(req, res, response))
+    .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getAllWithType = (req, res, next) => {
@@ -86,7 +89,7 @@ exports.getAllWithType = (req, res, next) => {
       isNeed: (isNeed === "true")
     }
   })
-    .then(response => successResponse(req, res, response))
+    .then(response => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
 exports.getLimitWithType = (req, res, next) => {
@@ -104,7 +107,7 @@ exports.getLimitWithType = (req, res, next) => {
   })
     .then(response => {
       // console.log(response);
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch(err => errHandler(err, res));
 };
@@ -128,7 +131,7 @@ exports.getById = (req, res, next) => {
     } */
   const { postId } = req.body;
   Post.findOne({ where: { id: postId } })
-    .then(response => successResponse(res, response))
+    .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
 async function createPost (body) {
@@ -154,7 +157,7 @@ exports.addNewPost = (req, res, next) => {
   let { body, user } = req;
   body = preProcessData(body, user);
   // console.log(body);
-  createPost(body).then(post => successResponse(res, post)).catch(err => errHandler(err, res));
+  createPost(body).then(post => responseWithData(res, post)).catch(err => errHandler(err, res));
 };
 exports.delete = (req, res, next) => {
   // #swagger.tags = ['Post']
@@ -178,10 +181,10 @@ exports.delete = (req, res, next) => {
   const pk = body.postId;
   Post.findByPk(pk)
     .then(post => {
-      if (post === null) { return Promise.reject(new Error("Null")); }
-      if (post.userId === req.user.id || req.user.role === 0) { return post.destroy(); } else { return Promise.reject(new Error("Forbbiden")); }
+      if (post === null) { return Promise.reject(new NotFoundError()); }
+      if (post.userId === req.user.id || req.user.role === 0) { return post.destroy(); } else { return Promise.reject(new ForbiddenError()); }
     })
-    .then(() => res.status(200).send({ succeess: true }))
+    .then(() => successResponse(res, "Delete Success"))
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
@@ -194,7 +197,7 @@ exports.update = (req, res, next) => {
   const pk = body.id;
   Post.findByPk(pk, { include: [File] })
     .then(post => {
-      if (post === null) { return Promise.reject(new Error("Null")); }
+      if (post === null) { return Promise.reject(new NotFoundError()); }
       if (post.userId === req.user.id) {
         post.files.map(file => file.destroy());
         uPost.userId = post.userId; // 把po文者換成原本的po文者
@@ -206,10 +209,10 @@ exports.update = (req, res, next) => {
         });
         const update = [postUpdate, filesUpdate];
         return Promise.all(update);
-      } else { return Promise.reject(new Error("Forbbiden")); }
+      } else { return Promise.reject(new ForbiddenError()); }
     })
     .then(post => {
-      successResponse(res, post);
+      responseWithData(res, post);
     })
     .catch(err => errHandler(err, res));
 };
