@@ -54,49 +54,83 @@ paths:
         '500':
           description: Internal Server Error
   /public/post/getAllWithType:
-    post:
+     get:
       tags:
         - Post
       description: ''
-      parameters: []
+      parameters: 
+        - name: typeId
+          in : query
+          required: true
+          schema:
+            type: integer
+        - name: isNeed
+          in : query
+          required: true
+          schema:
+            type: boolean
       responses:
         '403':
           description: Forbidden
   /public/post/getById:
-    post:
+    get:
       tags:
         - Post
       description: ''
-      parameters: []
+      parameters: 
+        - name: postId
+          in : query
+          required: true
+          schema:
+            type: integer
       responses:
         '403':
           description: Forbidden
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-              required:
-                - postId
   /public/post/getLimitWithType:
-    post:
+    get:
       tags:
         - Post
       description: ''
-      parameters: []
+      parameters: 
+        - name: typeId
+          in : query
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in : query
+          required: true
+          schema:
+            type: integer
+        - name: offset
+          in : query
+          required: true
+          schema:
+            type: integer
+        - name: isNeed
+          in : query
+          required: true
+          schema:
+            type: boolean
       responses:
         '403':
           description: Forbidden
   /public/post/query:
-    post:
+    get:
       tags:
         - Post
       description: ''
-      parameters: []
+      parameters: 
+        - name: search
+          in : query
+          required: true
+          schema:
+            type: string
+        - name: isNeed
+          in : query
+          required: true
+          schema:
+            type: boolean
       responses:
         '200':
           description: 回傳搜尋到的Post
@@ -109,23 +143,7 @@ paths:
                 $ref: '#/components/schemas/Post'
         '403':
           description: Forbidden
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                search:
-                  type: integer
-                isNeed:
-                  type: boolean
-                typeId:
-                  type: integer
-                limit:
-                  type: integer
-                offset:
-                  type: integer
+      
   /public/user/login:
     post:
       description: ''
@@ -265,19 +283,28 @@ paths:
                 phone:
                   type: string
                 pictureUrl:
-                  tpye: string
+                  type: string
               required:
                 - googleIdToken
                 - gender
                 - birthday
                 - phone
   /public/type/getAll:
-    post:
+    get:
       tags:
         - Type
       description: ''
       parameters: []
       responses:
+        '200':
+          description: All Type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Type'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Type'
         '403':
           description: Forbidden
   /public/topic/getAll:
@@ -307,6 +334,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Topic'
+        '204':
+          description: No Content
         '403':
           description: Forbidden
       requestBody:
@@ -354,27 +383,24 @@ paths:
         '403':
           description: Forbidden
   /private/post/delete:
-    post:
+    delete:
       tags:
         - Post
       description: ''
-      parameters: []
+      parameters: 
+        - in: query
+          name: postId
+          schema:
+            type: integer
+          description: Post ID
       responses:
+        '200':
+          description: Delete success
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                postId:
-                  type: string
-              required:
-                - postId
+
   /private/post/update:
     post:
       tags:
@@ -692,7 +718,7 @@ paths:
           schema:
             type: integer
       responses:
-        '204':
+        '200':
           description: Delete successfully
         '401':
           description: Unauthorized
@@ -736,8 +762,8 @@ components:
           type: string
           description: TopicName
         isCreatedByUser:
-          type: integer
-          description: 0 = no , 1 = yes
+          type: boolean
+          description: true when it is CreatedByUser
     User:
       type: object
       properties:
@@ -825,4 +851,18 @@ components:
           type: array
         comments:
           type: array
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+  responses:
+    UnauthorizedError:
+      description: The user is not authorized to perform this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    default:
+      $ref: '#/components/responses/UnauthorizedError'
 

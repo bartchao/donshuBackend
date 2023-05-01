@@ -18,39 +18,7 @@ function preProcessData (body, user) {
   return body;
 }
 exports.query = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  /* #swagger.requestBody = {
-            required: false,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            search: {
-                                type: "integer"
-                            },
-                            isNeed: {
-                                type:"boolean"
-                            },
-                            typeId: {
-                              type: "integer"
-                            },
-                            limit: {
-                              type: "integer"
-                            },
-                            offset: {
-                              type: "integer"
-                            }
-                        },
-                    }
-                }
-              }
-    } */
-  /* #swagger.responses[200] = {
-      description: '回傳搜尋到的Post',
-      schema: { $ref: "#/definitions/Post" }
-    } */
-  const { search, isNeed } = req.body;
+  const { search, isNeed } = req.query;
   const query = {
     where: {
       [Op.or]: [
@@ -69,7 +37,6 @@ exports.query = (req, res, next) => {
     .catch(err => errorResponse(req, res, err.message));
 };
 exports.addComment = (req, res, next) => {
-  // #swagger.tags = ['Post']
   const comment = req.body;
   comment.userId = req.user.id;
   const newComment = Comment.build(comment);
@@ -81,8 +48,7 @@ exports.addComment = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.getAllWithType = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  const { typeId, isNeed } = req.body;
+  const { typeId, isNeed } = req.query;
   Post.findAll({
     where: {
       typeId,
@@ -93,8 +59,7 @@ exports.getAllWithType = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.getLimitWithType = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  let { typeId, isNeed, offset, limit } = req.body;
+  let { typeId, isNeed, offset, limit } = req.query;
   offset = parseInt(offset);
   limit = parseInt(limit);
   Post.findAll({
@@ -112,24 +77,7 @@ exports.getLimitWithType = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.getById = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  /* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            postId: {
-                                type: "string"
-                            }
-                        },
-                        required: ["postId"]
-                    }
-                }
-              }
-    } */
-  const { postId } = req.body;
+  const { postId } = req.query;
   Post.findOne({ where: { id: postId } })
     .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
@@ -153,32 +101,13 @@ async function createPost (body) {
   return result;
 }
 exports.addNewPost = (req, res, next) => {
-  // #swagger.tags = ['Post']
   let { body, user } = req;
   body = preProcessData(body, user);
   // console.log(body);
   createPost(body).then(post => responseWithData(res, post)).catch(err => errHandler(err, res));
 };
 exports.delete = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  /* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            postId: {
-                                type: "string"
-                            }
-                        },
-                        required: ["postId"]
-                    }
-                }
-              }
-    } */
-  const body = req.body;
-  const pk = body.postId;
+  const pk = req.query.postId;
   Post.findByPk(pk)
     .then(post => {
       if (post === null) { return Promise.reject(new NotFoundError()); }
@@ -188,8 +117,6 @@ exports.delete = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
-  // #swagger.tags = ['Post']
-
   const { body, user } = req;
   const { files } = body;
   const uPost = preProcessData(body, user);

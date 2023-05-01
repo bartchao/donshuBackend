@@ -20,7 +20,7 @@ router.use(checkToken);
 router.post("/checkAPKversion", checkAPKversion);
 //  post
 router.post("/post/addNewPost", postController.addNewPost);
-router.post("/post/delete", validate(postValidator.getById), postController.delete);
+router.delete("/post/delete", validate(postValidator.getById), postController.delete);
 router.post("/post/update", postController.update);
 // comment
 router.post("/post/addComment", commentController.addNew);

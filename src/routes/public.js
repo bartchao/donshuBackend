@@ -7,16 +7,16 @@ const { postValidator, topicValidator, userValidator } = require("../db/validato
 
 const { errHandler } = require("../helper/errHandler");
 //  post
-router.post("/post/getAllWithType", validate(postValidator.getAllWithType), postController.getAllWithType);
-router.post("/post/getById", validate(postValidator.getById), postController.getById);
-router.post("/post/getLimitWithType", validate(postValidator.getLimitWithType), postController.getLimitWithType);
-router.post("/post/query", validate(postValidator.query), postController.query);
+router.get("/post/getAllWithType", validate(postValidator.getAllWithType), postController.getAllWithType);
+router.get("/post/getById", validate(postValidator.getById), postController.getById);
+router.get("/post/getLimitWithType", validate(postValidator.getLimitWithType), postController.getLimitWithType);
+router.get("/post/query", validate(postValidator.query), postController.query);
 //  user
 router.post("/user/login", authController.login);
 router.post("/user/googleLogin", authController.googleLogin);
 router.post("/user/register", validate(userValidator.register), authController.register);
 // type & topic
-router.post("/type/getAll", typeController.getAll);
+router.get("/type/getAll", typeController.getAll);
 // router.get("/topic/getAll", topicController.getAll);
 router.get("/topic/getWithType", validate(topicValidator.getWithType), topicController.getWithType);
 //
