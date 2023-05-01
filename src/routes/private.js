@@ -3,7 +3,7 @@ const router = express.Router();
 const Middleware = require("../middleware/");
 const { checkToken, checkTokExp, ImgUpload, checkAPKversion } = Middleware;
 const { validate } = require("express-validation");
-const { postValidator, topicValidator, userValidator, commentValidator } = require("../db/validator/index");
+const { postValidator, topicValidator, userValidator, commentValidator, replyValidator } = require("../db/validator/index");
 const Controller = require("../db/controller/");
 const { errHandler } = require("../helper/errHandler");
 const {
@@ -29,8 +29,8 @@ router.delete("/comment/delete", validate(commentValidator.deleteComment), comme
 router.post("/comment/update", validate(commentValidator.updateComment), commentController.update);
 // reply
 router.post("/comment/addReply", replyController.addNew);
-router.delete("/reply/delete", replyController.delete);
-router.post("/reply/update", replyController.update);
+router.delete("/reply/delete", validate(replyValidator.deleteReply), replyController.delete);
+router.post("/reply/update", validate(replyValidator.updateReply), replyController.update);
 // user
 router.post("/user/getPosts", validate(userValidator.getPosts), userController.getPosts);
 router.get("/user/getUser", userController.getLoggedInUser);

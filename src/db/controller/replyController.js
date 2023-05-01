@@ -53,24 +53,7 @@ exports.addNew = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.delete = (req, res, next) => {
-  // #swagger.tags = ['Reply']
-  /* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            id: {
-                                type: "integer"
-                            }
-                        },
-                        required: ["id"]
-                    }
-                }
-              }
-    } */
-  const { id } = req.body;
+  const { id } = req.query;
   Reply.findByPk(id)
     .then(rpy => {
       if (rpy === null) { return Promise.reject(new NotFoundError()); }
@@ -79,26 +62,6 @@ exports.delete = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
-  // #swagger.tags = ['Reply']
-/* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            id: {
-                                type: "integer"
-                            },
-                            text: {
-                              type: "string"
-                            }
-                        },
-                        required: ["id","text"]
-                    }
-                }
-              }
-    } */
   const { id, text } = req.body;
   Reply.findByPk(id)
     .then(rpy => {
