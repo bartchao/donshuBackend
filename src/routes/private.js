@@ -41,7 +41,7 @@ router.post("/user/getAllUsername", userController.getAllUser);
 router.post("/user/searchUser", validate(userValidator.searchUserName), userController.searchUserName);
 // topic
 router.post("/topic/addTopic", validate(topicValidator.addTopic), topicController.addTopic);
-router.post("/topic/deleteTopic", validate(topicValidator.getById), topicController.deleteTopic);
+router.delete("/topic/deleteTopic", validate(topicValidator.getById), topicController.deleteTopic);
 
 // router.post('/user/delete',userController.delete);
 

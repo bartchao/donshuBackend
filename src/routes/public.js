@@ -17,8 +17,8 @@ router.post("/user/googleLogin", authController.googleLogin);
 router.post("/user/register", validate(userValidator.register), authController.register);
 // type & topic
 router.post("/type/getAll", typeController.getAll);
-router.post("/topic/getAll", topicController.getAll);
-router.post("/topic/getWithType", validate(topicValidator.getWithType), topicController.getWithType);
+// router.get("/topic/getAll", topicController.getAll);
+router.get("/topic/getWithType", validate(topicValidator.getWithType), topicController.getWithType);
 //
 router.use((err, req, res, next) => { errHandler(err, res); });
 

@@ -1,13 +1,13 @@
 const Joi = require("joi");
 
 module.exports.getWithType = {
-  body: Joi.object({
-    typeId: Joi.number().required()
+  query: Joi.object({
+    typeId: Joi.number().optional()
   })
 };
 module.exports.getById = {
-  body: Joi.object({
-    topicId: Joi.string().required()
+  query: Joi.object({
+    topicId: Joi.number().required()
   })
 };
 module.exports.addTopic = {
