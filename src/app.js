@@ -4,7 +4,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
 const helmet = require("helmet");
-const model = require("./db/model/");
 const rateLimit = require("express-rate-limit");
 const winston = require("winston");
 const limiter = rateLimit({
@@ -66,14 +65,18 @@ app.use(cors());
 app.use("/", indexRouter);
 if (process.env.NODE_ENV !== "production") {
   const swaggerUi = require("swagger-ui-express");
-  const swaggerDocument = require("../swagger/swagger_output.json");
-  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  const fs = require("fs");
+  const YAML = require("yaml");
+  const file = fs.readFileSync("./swagger/openapi.yaml", "utf8");
+  const swaggerDocument = YAML.parse(file);
+  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
 app.use(checkAPIkey);
 
 app.use("/public", publicRouter);
 app.use("/private", privateRouter);
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

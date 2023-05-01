@@ -1,0 +1,819 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: Donshi Backend Development API
+  description: ''
+servers:
+  - url: https://livinglab.ccu.edu.tw/testapi
+tags:
+  - name: ''
+  - description: ''
+security:
+   - apiKeyAuth: []
+   - bearerAuth: [] 
+paths:
+  /:
+    get:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /uploads/{upload}:
+    get:
+      description: ''
+      parameters:
+        - name: upload
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '500':
+          description: Internal Server Error
+  /apk/{apkFile}:
+    get:
+      description: ''
+      parameters:
+        - name: apkFile
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '500':
+          description: Internal Server Error
+  /public/post/getAllWithType:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '403':
+          description: Forbidden
+  /public/post/getById:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+  /public/post/getLimitWithType:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '403':
+          description: Forbidden
+  /public/post/query:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: 回傳搜尋到的Post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '403':
+          description: Forbidden
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: integer
+                isNeed:
+                  type: boolean
+                typeId:
+                  type: integer
+                limit:
+                  type: integer
+                offset:
+                  type: integer
+  /public/user/login:
+    post:
+      description: ''
+      parameters: []
+      responses:
+        '403':
+          description: Forbidden
+      deprecated: true
+  /public/user/googleLogin:
+    post:
+      tags:
+        - Auth
+      summary: Google OAuth2.0登入
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: 登入成功後得到的token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: <Token for every request use>
+                xml:
+                  name: main
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: <Token for every request use>
+                xml:
+                  name: main
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                googleIdToken:
+                  type: string
+              required:
+                - googleIdToken
+  /public/user/register:
+    post:
+      tags:
+        - Auth
+      summary: Google OAuth2.0 Register
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: 登入成功後得到的token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: <Token for every request use>
+                xml:
+                  name: main
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+                    example: <Token for every request use>
+                xml:
+                  name: main
+        '400':
+          description: 輸入資料有誤
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  msg:
+                    type: string
+                    example: <Error message>
+                xml:
+                  name: main
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  msg:
+                    type: string
+                    example: <Error message>
+                xml:
+                  name: main
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                googleIdToken:
+                  type: string
+                gender:
+                  type: string
+                birthday:
+                  type: string
+                  format: date
+                introduction:
+                  type: string
+                phone:
+                  type: string
+                pictureUrl:
+                  tpye: string
+              required:
+                - googleIdToken
+                - gender
+                - birthday
+                - phone
+  /public/type/getAll:
+    post:
+      tags:
+        - Type
+      description: ''
+      parameters: []
+      responses:
+        '403':
+          description: Forbidden
+  /public/topic/getAll:
+    post:
+      tags:
+        - Topic
+      description: ''
+      parameters: []
+      responses:
+        '403':
+          description: Forbidden
+  /public/topic/getWithType:
+    post:
+      tags:
+        - Topic
+      summary: 取得Type中擁有的Topic
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: 回傳與該Type有關之Topic
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Topic'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Topic'
+        '403':
+          description: Forbidden
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                typeId:
+                  type: integer
+              required:
+                - typeId
+  /private/checkTokExp:
+    post:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/checkAPKversion:
+    post:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/post/addNewPost:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/post/delete:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+              required:
+                - postId
+  /private/post/update:
+    post:
+      tags:
+        - Post
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/post/addComment:
+    post:
+      tags:
+        - Comment
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/comment/addAndGet:
+    post:
+      tags:
+        - Comment
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      deprecated: true
+  /private/comment/delete:
+    post:
+      tags:
+        - Comment
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+              required:
+                - id
+  /private/comment/update:
+    post:
+      tags:
+        - Comment
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                text:
+                  type: string
+              required:
+                - id
+                - text
+  /private/comment/addReply:
+    post:
+      tags:
+        - Reply
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/reply/delete:
+    post:
+      tags:
+        - Reply
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+              required:
+                - id
+  /private/reply/update:
+    post:
+      tags:
+        - Reply
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                text:
+                  type: string
+              required:
+                - id
+                - text
+  /private/user/getPosts:
+    post:
+      tags:
+        - Users
+      summary: 取得登入的User擁有的發文
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isNeed:
+                  type: boolean
+              required:
+                - isNeed
+  /private/user/getUser:
+    post:
+      tags:
+        - Users
+      summary: 取得登入的User資料
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: Current User Data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/user/update:
+    post:
+      tags:
+        - Users
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/user/getOtherUser:
+    post:
+      tags:
+        - Users
+      summary: 取得某User資料
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: Found Other User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+                - id
+  /private/user/getUserPosts:
+    post:
+      tags:
+        - Users
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/user/getAllUsername:
+    post:
+      tags:
+        - Users
+      summary: 取得所有User
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  /private/user/searchUser:
+    post:
+      tags:
+        - Users
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+              required:
+                - search
+  /private/topic/addTopic:
+    post:
+      tags:
+        - Topic
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                typeId:
+                  type: integer
+                topicName:
+                  type: string
+              required:
+                - typeId
+                - topicName
+  /private/topic/deleteTopic:
+    post:
+      tags:
+        - Topic
+      description: ''
+      parameters: []
+      responses:
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topicId:
+                  type: integer
+              required:
+                - topicId
+  /private/uploadImg:
+    post:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '413':
+          description: Payload Too Large
+        '500':
+          description: Internal Server Error
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: api-key
+      description: API_KEY
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Type:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: typeId
+        typeName:
+          type: string
+          description: TypeName
+    Topic:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: topicId
+        topicName:
+          type: string
+          description: TopicName
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: userId
+        account:
+          type: string
+          description: email
+        username:
+          type: string
+          description: User name in view
+        gender:
+          type: string
+          description: 男/女
+        birthday:
+          type: string
+          format: date
+          description: 出生年月日
+        introduction:
+          type: string
+          description: 使用者自我介紹
+        phone:
+          type: string
+          description: Telephone number
+        pictureUrl:
+          type: string
+          description: 使用者頭像網址
+        userTickets:
+          type: object
+          description: 好食卷
+          properties:
+            hasUserTicket:
+              type: boolean
+              description: 擁有好時卷
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          description: postId
+        typeId:
+          type: integer
+          description: typeId
+        topicId:
+          type: integer
+          description: topicId
+        title:
+          type: string
+          description: 貼文標題
+        startDate:
+          type: string
+          format: date
+          description: 公告開始日期
+        endDate:
+          type: string
+          format: date
+          description: 公告結束日期
+        position:
+          type: string
+          description: 地點
+        text:
+          type: string
+          description: 內文
+        latitude:
+          type: string
+          description: Latitude
+        longitude:
+          type: string
+          description: Longitude
+        userId:
+          type: string
+          description: 貼文擁有者
+        isNeed:
+          type: boolean
+          description: true=需求/false=資訊
+        topic:
+          $ref: '#/definitions/Topic'
+        type:
+          $ref: '#/definitions/Type'
+        user:
+          $ref: '#/definitions/User'
+        files:
+          type: array
+        comments:
+          type: array
+
