@@ -72,24 +72,7 @@ exports.addNewAndGetComments = (req, res, next) => {
   //     .catch(err =>errHandler(err,res))
 };
 exports.delete = (req, res, next) => {
-  // #swagger.tags = ['Comment']
-  /* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            id: {
-                                type: "integer"
-                            }
-                        },
-                        required: ["id"]
-                    }
-                }
-              }
-    } */
-  const { id } = req.body;
+  const { id } = req.query;
   Comment.findByPk(id)
     .then(comment => {
       if (comment === null) { return Promise.reject(new errHandler.NotFoundError()); }
@@ -98,30 +81,10 @@ exports.delete = (req, res, next) => {
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
-  // #swagger.tags = ['Comment']
-  /* #swagger.requestBody = {
-            required: false,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            id: {
-                                type: "integer"
-                            },
-                            text: {
-                              type: "string"
-                            }
-                        },
-                        required: ["id","text"]
-                    }
-                }
-              }
-    } */
   const { id, text } = req.body;
   Comment.findByPk(id)
     .then(comment => {
-      if (comment === null) { return Promise.reject(new Error("Not found")); }
+      if (comment === null) { return Promise.reject(new errHandler.NotFoundError("Not found")); }
       if (comment.userId === req.user.id || req.user.role === 0) { return comment.update({ text }); } else { return Promise.reject(new errHandler.ForbiddenError()); }
     })
     .then(cmt => response(cmt, res, "UPDATE"))

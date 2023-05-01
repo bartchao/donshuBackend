@@ -1,13 +1,13 @@
 const Joi = require("joi");
 
 module.exports.getAllWithType = {
-  body: Joi.object({
+  query: Joi.object({
     typeId: Joi.number().required(),
     isNeed: Joi.boolean().required()
   })
 };
 module.exports.query = {
-  body: Joi.object({
+  query: Joi.object({
     search: Joi.string().required(),
     isNeed: Joi.boolean().optional(),
     typeId: Joi.number().optional(),
@@ -16,7 +16,7 @@ module.exports.query = {
   })
 };
 module.exports.getLimitWithType = {
-  body: Joi.object({
+  query: Joi.object({
     typeId: Joi.number().required(),
     isNeed: Joi.boolean().required(),
     offset: Joi.number().required(),
@@ -24,7 +24,7 @@ module.exports.getLimitWithType = {
   })
 };
 module.exports.getById = {
-  body: Joi.object({
+  query: Joi.object({
     postId: Joi.string().required()
   })
 };
