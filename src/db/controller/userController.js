@@ -24,8 +24,6 @@ function preProcessData (body) {
   return body;
 }
 function getUserPosts (userId, isNeed) {
-  // #swagger.tags = ['Users']
-
   return User.findByPk(userId)
     .then((user) =>
       user === null
@@ -36,24 +34,7 @@ function getUserPosts (userId, isNeed) {
     );
 }
 exports.searchUserName = (req, res, next) => {
-  // #swagger.tags = ['Users']
-  /*  #swagger.requestBody = {
-            required: false,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            search: {
-                                type: "string"
-                            }
-                        },
-                        required: ["search"]
-                    }
-                }
-              }
-        } */
-  const { search } = req.body;
+  const { search } = req.query;
   User.findAll({
     attributes: ["id", "username", "pictureUrl"],
     where: {
@@ -67,28 +48,8 @@ exports.searchUserName = (req, res, next) => {
       errHandler(res, err);
     });
 };
-// exports.searchUser = (req,res,next)=>{
-//     const search = "t"
-//     User.findAll({
-// 	attributes: ["id","username"],
-// 	where:{
-//     		username: {
-// 			[Op.substring]: search
-// 		}
-//     	}
-//      })
-//     .then(user=>{
-//         res.status(200).send(user);
-//     })
-//     .catch(()=>{
-//         res.status(500).send({success: false,});
-//     })
-// }
 
 exports.getAllUser = (req, res, next) => {
-  /* #swagger.tags = ['Users']
-     #swagger.summary = '取得所有User'
-  */
   User.findAll({ attributes: ["id", "username", "pictureUrl"] })
     .then((user) => {
       responseWithData(res, user);
@@ -98,31 +59,7 @@ exports.getAllUser = (req, res, next) => {
     });
 };
 exports.getOtherUser = (req, res, next) => {
-  /* #swagger.tags = ['Users']
-     #swagger.summary = '取得某User資料'
-  */
-
-  /*  #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            id: {
-                                type: "string"
-                            }
-                        },
-                        required: ["id"]
-                    }
-                }
-              }
-        } */
-  /* #swagger.responses[200] = {
-            description: 'Found Other User',
-            schema: { $ref: '#/definitions/User' }
-    } */
-  const { id } = req.body;
+  const { id } = req.query;
   User.findByPk(id)
     .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
     .catch((err) => {
@@ -132,8 +69,7 @@ exports.getOtherUser = (req, res, next) => {
 exports.getOtherUserPosts = (req, res, next) => {
   // #swagger.tags = ['Users']
 
-  const { body } = req;
-  const { id, isNeed } = body;
+  const { id, isNeed } = req.query;
   getUserPosts(id, isNeed)
     .then((posts) => responseWithData(res, posts))
     .catch((error) => {
@@ -156,13 +92,6 @@ exports.isExist = (req, res, next) => {
 };
 
 exports.getLoggedInUser = (req, res, next) => {
-  /* #swagger.tags = ['Users']
-     #swagger.summary = '取得登入的User資料'
-  */
-  /* #swagger.responses[200] = {
-            description: 'Current User Data',
-            schema: { $ref: '#/definitions/User' }
-    } */
   const { id } = req.user;
   User.findByPk(id)
     .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
@@ -216,27 +145,8 @@ exports.update = (req, res, next) => {
     .catch((err) => errHandler(err, res));
 };
 exports.getPosts = (req, res, next) => {
-  /* #swagger.tags = ['Users']
-     #swagger.summary = '取得登入的User擁有的發文'
-     #swagger.requestBody = {
-      required: true,
-      "@content": {
-          "application/json": {
-              schema: {
-                  type: "object",
-                  properties: {
-                      isNeed: {
-                          type: "boolean"
-                      }
-                  },
-                  required: ["isNeed"]
-              }
-          }
-        }
-      }
-  */
-  const { user, body } = req;
-  const { isNeed } = body;
+  const { user } = req;
+  const { isNeed } = req.query;
   getUserPosts(user.id, isNeed)
     .then((posts) => responseWithData(res, posts))
     .catch((err) => errHandler(err, res));

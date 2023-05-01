@@ -33,12 +33,12 @@ router.delete("/reply/delete", replyController.delete);
 router.post("/reply/update", replyController.update);
 // user
 router.post("/user/getPosts", validate(userValidator.getPosts), userController.getPosts);
-router.post("/user/getUser", userController.getLoggedInUser);
+router.get("/user/getUser", userController.getLoggedInUser);
 router.post("/user/update", userController.update);
-router.post("/user/getOtherUser", validate(userValidator.getById), userController.getOtherUser);
-router.post("/user/getUserPosts", validate(userValidator.getOtherUserPosts), userController.getOtherUserPosts);
-router.post("/user/getAllUsername", userController.getAllUser);
-router.post("/user/searchUser", validate(userValidator.searchUserName), userController.searchUserName);
+router.get("/user/getOtherUser", validate(userValidator.getById), userController.getOtherUser);
+router.get("/user/getUserPosts", validate(userValidator.getOtherUserPosts), userController.getOtherUserPosts);
+router.get("/user/getAllUsername", userController.getAllUser);
+router.get("/user/searchUser", validate(userValidator.searchUserName), userController.searchUserName);
 // topic
 router.post("/topic/addTopic", validate(topicValidator.addTopic), topicController.addTopic);
 router.delete("/topic/deleteTopic", validate(topicValidator.getById), topicController.deleteTopic);

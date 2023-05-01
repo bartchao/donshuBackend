@@ -535,8 +535,22 @@ paths:
         - Users
       summary: 取得登入的User擁有的發文
       description: ''
-      parameters: []
+      parameters: 
+        - in: query
+          name: isNeed
+          schema:
+            type: boolean
+          description: 是否為需求
       responses:
+        '200':
+          description: Current User Posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Post'
         '401':
           description: Unauthorized
         '403':
@@ -553,7 +567,7 @@ paths:
               required:
                 - isNeed
   /private/user/getUser:
-    post:
+    get:
       tags:
         - Users
       summary: 取得登入的User資料
@@ -585,12 +599,17 @@ paths:
         '403':
           description: Forbidden
   /private/user/getOtherUser:
-    post:
+    get:
       tags:
         - Users
       summary: 取得某User資料
       description: ''
-      parameters: []
+      parameters: 
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: User ID
       responses:
         '200':
           description: Found Other User
@@ -617,35 +636,78 @@ paths:
               required:
                 - id
   /private/user/getUserPosts:
-    post:
+    get:
       tags:
         - Users
       description: ''
-      parameters: []
+      parameters: 
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: User ID
+        - in: query
+          name: isNeed
+          schema:
+            type: boolean
+          description: 是否為需求
       responses:
+        '200':
+          description: Found User Posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Post'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
   /private/user/getAllUsername:
-    post:
+    get:
       tags:
         - Users
       summary: 取得所有User
       description: ''
       parameters: []
       responses:
+        '200':
+          description: All Users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
   /private/user/searchUser:
-    post:
+    get:
       tags:
         - Users
       description: ''
-      parameters: []
+      parameters: 
+        - name: search
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Search username
       responses:
+        '200':
+          description: Users matched.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
         '403':
