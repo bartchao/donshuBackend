@@ -11,12 +11,12 @@ services:
         depends_on:
             - mysql
         tty: true
-        command: tail -f /dev/null
+        command: npm install && npm run dev
     mysql:
         image: mysql:5.7.39-debian
         container_name: mysqldatabase
         ports:
-            - "3306:3306"
+            - "3306:33066"
         volumes:
             - ./.docker/mysql:/var/lib/mysql
         environment:
