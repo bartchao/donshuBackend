@@ -23,20 +23,6 @@ function preProcessData (body) {
   }
   return body;
 }
-function getUserPosts (userId, isNeed) {
-  const whereObj = {};
-  if (isNeed !== undefined && typeof isNeed === "boolean") {
-    whereObj.isNeed = isNeed;
-  }
-  return User.findByPk(userId)
-    .then((user) =>
-      user === null
-        ? Promise.reject(new NotFoundError())
-        : user.getPosts({
-          where: whereObj
-        })
-    );
-}
 exports.searchUserName = (req, res, next) => {
   const { search } = req.query;
   User.findAll({
@@ -68,16 +54,6 @@ exports.getOtherUser = (req, res, next) => {
     .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
     .catch((err) => {
       errHandler(err, res);
-    });
-};
-exports.getOtherUserPosts = (req, res, next) => {
-  // #swagger.tags = ['Users']
-
-  const { id, isNeed } = req.query;
-  getUserPosts(id, isNeed)
-    .then((posts) => responseWithData(res, posts))
-    .catch((error) => {
-      errHandler(error, res);
     });
 };
 
@@ -146,13 +122,6 @@ exports.update = (req, res, next) => {
       };
       responseWithData(res, response);
     })
-    .catch((err) => errHandler(err, res));
-};
-exports.getPosts = (req, res, next) => {
-  const { user } = req;
-  const { isNeed } = req.query;
-  getUserPosts(user.id, isNeed)
-    .then((posts) => responseWithData(res, posts))
     .catch((err) => errHandler(err, res));
 };
 // not use

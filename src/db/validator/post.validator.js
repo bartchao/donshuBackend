@@ -14,3 +14,14 @@ module.exports.getById = {
     postId: Joi.string().required()
   })
 };
+module.exports.getByUserId = {
+  query: Joi.object({
+    userId: Joi.string().required()
+  })
+};
+module.exports.getOtherUserPosts = {
+  query: Joi.object({
+    userId: Joi.string().optional(),
+    isNeed: Joi.boolean().optional()
+  })
+};

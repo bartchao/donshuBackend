@@ -127,6 +127,7 @@ exports.register = (req, res, next) => {
 exports.login = (req, res, next) => {
   // #swagger.deprecated = true
   const { account } = req.body;
+  console.log(account);
   User.findOne({ where: { account } })
     .then((user) => {
       const payload = {

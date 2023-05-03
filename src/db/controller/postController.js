@@ -6,6 +6,7 @@ const checkValidDate = require("../../util/checkValidDate");
 const { errHandler, ForbiddenError, NotFoundError } = require("../../helper/errHandler");
 
 const { responseWithData, errorResponse, successResponse } = require("../../helper/response");
+const { where } = require("sequelize");
 function preProcessData (body, user) {
   const { type, startDate, endDate } = body;
   delete body.createdAt;
@@ -101,6 +102,17 @@ exports.query = (req, res, next) => {
 exports.getById = (req, res, next) => {
   const { postId } = req.query;
   Post.findOne({ where: { id: postId } })
+    .then((response) => responseWithData(res, response))
+    .catch(err => errHandler(err, res));
+};
+exports.getByUserId = (req, res, next) => {
+  const { userId, isNeed } = req.query;
+  const whereObj = {};
+  whereObj.userId = userId === undefined ? req.user.id : userId;
+  if (isNeed !== undefined) {
+    whereObj.isNeed = isNeed;
+  }
+  Post.findAll({ where: whereObj })
     .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };

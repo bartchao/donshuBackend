@@ -22,6 +22,8 @@ router.post("/checkAPKversion", checkAPKversion);
 router.post("/post/addNewPost", postController.addNewPost);
 router.delete("/post/delete", validate(postValidator.getById), postController.delete);
 router.post("/post/update", postController.update);
+router.get("/post/getUserPosts", validate(postValidator.getOtherUserPosts), postController.getByUserId);
+
 // comment
 router.post("/post/addComment", commentController.addNew);
 // router.post("/comment/addAndGet", commentController.addNewAndGetComments);
@@ -32,11 +34,10 @@ router.post("/comment/addReply", replyController.addNew);
 router.delete("/reply/delete", validate(replyValidator.deleteReply), replyController.delete);
 router.post("/reply/update", validate(replyValidator.updateReply), replyController.update);
 // user
-router.post("/user/getPosts", validate(userValidator.getPosts), userController.getPosts);
 router.get("/user/getUser", userController.getLoggedInUser);
 router.post("/user/update", userController.update);
 router.get("/user/getOtherUser", validate(userValidator.getById), userController.getOtherUser);
-router.get("/user/getUserPosts", validate(userValidator.getOtherUserPosts), userController.getOtherUserPosts);
+
 router.get("/user/getAllUsername", userController.getAllUser);
 router.get("/user/searchUser", validate(userValidator.searchUserName), userController.searchUserName);
 // topic

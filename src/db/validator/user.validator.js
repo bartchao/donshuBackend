@@ -10,15 +10,10 @@ module.exports.getById = {
     id: Joi.string().required()
   })
 };
-module.exports.getOtherUserPosts = {
-  body: Joi.object({
-    id: Joi.string().required(),
-    isNeed: Joi.boolean().required()
-  })
-};
+
 module.exports.getPosts = {
-  body: Joi.object({
-    isNeed: Joi.boolean().required()
+  query: Joi.object({
+    isNeed: Joi.boolean().optional()
   })
 };
 module.exports.register = {
