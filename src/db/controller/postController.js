@@ -17,15 +17,11 @@ function preProcessData (body, user) {
   body.userId = user.id;
   return body;
 }
-exports.query = (req, res, next) => {
+/* exports.query = (req, res, next) => {
   const { search, isNeed } = req.query;
   const query = {
     where: {
-      [Op.or]: [
-      // LIKE '%search%'
-        { title: { [Op.substring]: search } },
-        { text: { [Op.substring]: search } }
-      ]
+
     }
   };
   if (isNeed !== undefined) {
@@ -35,7 +31,7 @@ exports.query = (req, res, next) => {
   Post.findAll(query)
     .then(response => responseWithData(res, response))
     .catch(err => errorResponse(req, res, err.message));
-};
+}; */
 exports.addComment = (req, res, next) => {
   const comment = req.body;
   comment.userId = req.user.id;
@@ -47,26 +43,52 @@ exports.addComment = (req, res, next) => {
     .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
-exports.getAllWithType = (req, res, next) => {
+/* exports.getAllWithType = (req, res, next) => {
   const { typeId, isNeed } = req.query;
+  const whereObj = {};
+  if (typeId !== undefined) {
+    whereObj.typeId = typeId;
+  }
+  if (isNeed !== undefined) {
+    whereObj.isNeed = isNeed;
+  }
   Post.findAll({
-    where: {
-      typeId,
-      isNeed: (isNeed === "true")
-    }
+    where: whereObj
   })
     .then(response => responseWithData(res, response))
     .catch(err => errHandler(err, res));
-};
-exports.getLimitWithType = (req, res, next) => {
-  let { typeId, isNeed, offset, limit } = req.query;
-  offset = parseInt(offset);
-  limit = parseInt(limit);
+}; */
+exports.query = (req, res, next) => {
+  let { search, typeId, isNeed, offset, limit } = req.query;
+  let whereObj = {};
+  if (typeId !== undefined) {
+    whereObj.typeId = typeId;
+  }
+  if (isNeed !== undefined) {
+    whereObj.isNeed = isNeed;
+  }
+  if (offset === undefined) {
+    offset = 0;
+  } else {
+    offset = parseInt(offset);
+  }
+  if (limit === undefined) {
+    limit = 50;
+  } else {
+    limit = parseInt(limit);
+  }
+  if (search !== undefined) {
+    whereObj = {
+      [Op.or]: [
+        // LIKE '%search%'
+        { title: { [Op.substring]: search } },
+        { text: { [Op.substring]: search } }
+      ],
+      ...whereObj
+    };
+  }
   Post.findAll({
-    where: {
-      typeId,
-      isNeed: (isNeed === "true")
-    },
+    where: whereObj,
     limit,
     offset
   })

@@ -2,7 +2,7 @@
 const Op = require("sequelize").Op;
 const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
-const { errHandler, NotFoundError } = require("../../helper/errHandler");
+const { errHandler, NotFoundError, ForbiddenError } = require("../../helper/errHandler");
 const { successResponse, responseWithData } = require("../../helper/response");
 const { User } = Model;
 
@@ -24,12 +24,16 @@ function preProcessData (body) {
   return body;
 }
 function getUserPosts (userId, isNeed) {
+  const whereObj = {};
+  if (isNeed !== undefined && typeof isNeed === "boolean") {
+    whereObj.isNeed = isNeed;
+  }
   return User.findByPk(userId)
     .then((user) =>
       user === null
         ? Promise.reject(new NotFoundError())
         : user.getPosts({
-          where: { isNeed: isNeed === "true" }
+          where: whereObj
         })
     );
 }
@@ -125,7 +129,7 @@ exports.update = (req, res, next) => {
             return Promise.reject(new Error("Server Error"));
           }
         }
-      } else return Promise.reject(new Error("Forbbiden"));
+      } else return Promise.reject(new ForbiddenError());
     })
     .then((user) => {
       console.log(user);
@@ -161,7 +165,7 @@ exports.delete = (req, res, next) => {
     .then((user) => {
       if (user === null) return Promise.reject(new Error("Null"));
       if (user.id === req.user.id || req.user.role === 0) return user.destroy();
-      else return Promise.reject(new Error("Forbbiden"));
+      else return Promise.reject(new ForbiddenError());
     })
     .then(() => successResponse(res))
     .catch((err) => errHandler(err, res));

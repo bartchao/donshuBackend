@@ -7,9 +7,9 @@ const { postValidator, topicValidator, userValidator } = require("../db/validato
 
 const { errHandler } = require("../helper/errHandler");
 //  post
-router.get("/post/getAllWithType", validate(postValidator.getAllWithType), postController.getAllWithType);
+// router.get("/post/getAllWithType", validate(postValidator.getLimitWithType), postController.getAllWithType);
 router.get("/post/getById", validate(postValidator.getById), postController.getById);
-router.get("/post/getLimitWithType", validate(postValidator.getLimitWithType), postController.getLimitWithType);
+// router.get("/post/getLimitWithType", validate(postValidator.getLimitWithType), postController.getLimitWithType);
 router.get("/post/query", validate(postValidator.query), postController.query);
 //  user
 router.post("/user/login", authController.login);

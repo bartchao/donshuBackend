@@ -4,20 +4,11 @@ info:
   title: Donshi Backend Development API
   description: ''
 servers:
+  - url: http://localhost:3000
   - url: https://livinglab.ccu.edu.tw/testapi
 tags:
   - name: ''
   - description: ''
-securitySchemes:
-  apiKeyAuth:
-    type: apiKey
-    in: header
-    name: api-key
-    description: API_KEY
-  bearerAuth:
-    type: http
-    scheme: bearer
-    bearerFormat: JWT
 security:
    - apiKeyAuth: []
    - bearerAuth: [] 
@@ -58,20 +49,7 @@ paths:
       tags:
         - Post
       description: ''
-      parameters: 
-        - name: typeId
-          in : query
-          required: true
-          schema:
-            type: integer
-        - name: isNeed
-          in : query
-          required: true
-          schema:
-            type: boolean
-      responses:
-        '403':
-          description: Forbidden
+      deprecated: true
   /public/post/getById:
     get:
       tags:
@@ -82,58 +60,10 @@ paths:
           in : query
           required: true
           schema:
-            type: integer
-      responses:
-        '403':
-          description: Forbidden
-  /public/post/getLimitWithType:
-    get:
-      tags:
-        - Post
-      description: ''
-      parameters: 
-        - name: typeId
-          in : query
-          required: true
-          schema:
-            type: integer
-        - name: limit
-          in : query
-          required: true
-          schema:
-            type: integer
-        - name: offset
-          in : query
-          required: true
-          schema:
-            type: integer
-        - name: isNeed
-          in : query
-          required: true
-          schema:
-            type: boolean
-      responses:
-        '403':
-          description: Forbidden
-  /public/post/query:
-    get:
-      tags:
-        - Post
-      description: ''
-      parameters: 
-        - name: search
-          in : query
-          required: true
-          schema:
             type: string
-        - name: isNeed
-          in : query
-          required: true
-          schema:
-            type: boolean
       responses:
         '200':
-          description: 回傳搜尋到的Post
+          description: 回傳所有符合的Post
           content:
             application/json:
               schema:
@@ -143,7 +73,61 @@ paths:
                 $ref: '#/components/schemas/Post'
         '403':
           description: Forbidden
-      
+        '404':
+          description: Not Found
+  /public/post/query:
+    get:
+      tags:
+        - Post
+      description: ''
+      parameters: 
+        - name: search
+          in : query
+          required: false
+          schema:
+            type: string
+          description: Text in title or body.
+        - name: typeId
+          in : query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in : query
+          required: false
+          schema:
+            type: integer
+          description: defaults to 50
+        - name: offset
+          in : query
+          required: false
+          schema:
+            type: integer
+        - name: isNeed
+          in : query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: 回傳所有符合的Post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  /public/post/getLimitWithType:
+    get:
+      tags:
+        - Post
+      description: ''
+      deprecated: true
   /public/user/login:
     post:
       description: ''
@@ -334,8 +318,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Topic'
-        '204':
-          description: No Content
+        '404':
+          description: Resource Not Found
         '403':
           description: Forbidden
       requestBody:
@@ -400,7 +384,9 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
-
+        '404':
+          description: Post not found
+    
   /private/post/update:
     post:
       tags:
@@ -412,6 +398,8 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+        '404':
+          description: Post not found
   /private/post/addComment:
     post:
       tags:
@@ -446,6 +434,8 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+        '404':
+          description: Comment not found
   /private/comment/update:
     post:
       tags:
@@ -457,6 +447,8 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+        '404':
+          description: Comment not found
       requestBody:
         required: true
         content:
@@ -494,21 +486,14 @@ paths:
             type: integer
           description: Reply ID
       responses:
+        '200':
+          description: Delete success
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-              required:
-                - id
+        '404':
+          description: Reply not found
   /private/reply/update:
     post:
       tags:
@@ -520,6 +505,8 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+        '404':
+          description: Reply not found
       requestBody:
         required: true
         content:
@@ -535,7 +522,7 @@ paths:
                 - id
                 - text
   /private/user/getPosts:
-    post:
+    get:
       tags:
         - Users
       summary: 取得登入的User擁有的發文
@@ -560,17 +547,8 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                isNeed:
-                  type: boolean
-              required:
-                - isNeed
+        '404':
+          description: Posts not found
   /private/user/getUser:
     get:
       tags:
@@ -612,6 +590,7 @@ paths:
       parameters: 
         - in: query
           name: id
+          required: true
           schema:
             type: string
           description: User ID
@@ -625,21 +604,12 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-              required:
-                - id
   /private/user/getUserPosts:
     get:
       tags:
@@ -666,6 +636,8 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/Post'
+        '404': 
+          description: Not Found
         '401':
           description: Unauthorized
         '403':
@@ -713,21 +685,12 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
         '401':
           description: Unauthorized
         '403':
           description: Forbidden
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                search:
-                  type: string
-              required:
-                - search
   /private/topic/addTopic:
     post:
       tags:
@@ -780,6 +743,8 @@ paths:
           description: Unauthorized
         '403':
           description: Forbidden
+        '404':
+          description: Not Found
   /private/uploadImg:
     post:
       description: ''
@@ -796,6 +761,16 @@ paths:
         '500':
           description: Internal Server Error
 components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: api-key
+      description: API_KEY
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Type:
       type: object
@@ -820,6 +795,22 @@ components:
         isCreatedByUser:
           type: boolean
           description: true when it is CreatedByUser
+    UserLessInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: userId
+        username:
+          type: string
+          description: User name in view
+        pictureUrl:
+          type: string
+          description: 使用者頭像網址
+        role:
+          type: integer
+          description: 使用者角色(0=一般使用者, 1=管理員)
     User:
       type: object
       properties:
@@ -849,13 +840,9 @@ components:
         pictureUrl:
           type: string
           description: 使用者頭像網址
-        userTickets:
-          type: object
-          description: 好食卷
-          properties:
-            hasUserTicket:
-              type: boolean
-              description: 擁有好時卷
+        hasUserTicket:
+          type: boolean
+          description: 擁有好時卷
     Post:
       type: object
       properties:
@@ -898,15 +885,61 @@ components:
           type: boolean
           description: true=需求/false=資訊
         topic:
-          $ref: '#/definitions/Topic'
+          $ref: '#/components/schemas/Topic'
         type:
-          $ref: '#/definitions/Type'
+          $ref: '#/components/schemas/Type'
         user:
-          $ref: '#/definitions/User'
+          $ref: '#/components/schemas/UserLessInfo'
         files:
           type: array
+          $ref: '#/components/schemas/files'
         comments:
           type: array
+          $ref: '#/components/schemas/Comment'
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: commentId
+        user:
+          type: object
+          $ref: '#/components/schemas/UserLessInfo'
+        replies:
+          type: array
+          $ref: '#/components/schemas/Reply'
+          description: 內文
+        updatedAt:
+          type: string
+          format: date
+          description: 最後更新時間
+    Reply:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: replyId
+        text:
+          type: string
+        updatedAt:
+          type: string
+          format: date
+          description: 最後更新時間
+        user:
+          type: object
+          $ref: '#/components/schemas/UserLessInfo'
+    files:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: fileId
+        url:
+          type: string
+          description: 檔案網址
+        filename:
+          type: string
+          description: 檔案名稱
     Error:
       type: object
       properties:
