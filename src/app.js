@@ -62,7 +62,11 @@ app.use(compression()); // Compress all routes
 app.use(helmet());
 app.use(cors());
 
+<<<<<<< HEAD
 app.use("/", indexRouter);
+=======
+app.use("", indexRouter);
+>>>>>>> b7f355f (add docker env)
 if (process.env.NODE_ENV !== "production") {
   const swaggerUi = require("swagger-ui-express");
   const fs = require("fs");

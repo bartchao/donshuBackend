@@ -25,7 +25,12 @@ const logger = createLogger({
   ),
   transports: [
     // 只有 error 等級的錯誤 , 才會將訊息寫到 error.log 檔案中
+<<<<<<< HEAD
     new transports.File({ filename: path.join(__dirname, "../../log", "error.log"), level: "error" })
+=======
+    new transports.File({ filename: path.join(__dirname, "../../log", "error.log"), level: "error" }),
+    new transports.Console(),
+>>>>>>> b7f355f (add docker env)
     // info or 以上的等級的訊息 , 將訊息寫入 combined.log 檔案中
   ]
 });

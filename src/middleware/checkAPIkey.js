@@ -1,4 +1,8 @@
 module.exports = (req, res, next) => {
+<<<<<<< HEAD
+=======
+  console.log(req.originalUrl);
+>>>>>>> b7f355f (add docker env)
   const { headers } = req;
   // console.log(headers);
   const apiKey = (headers.hasOwnProperty("api-key"))
