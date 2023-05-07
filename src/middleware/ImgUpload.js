@@ -3,7 +3,7 @@ const path = require("path");
 const crypto = require("crypto");
 
 const storage = multer.diskStorage({
-  destination: "../../uploads/",
+  destination: path.join(__dirname, "../../uploads/"),
   filename: function (req, file, cb) {
     return crypto.randomBytes(16, function (err, raw) {
       if (err) {

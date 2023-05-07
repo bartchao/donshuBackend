@@ -1,6 +1,9 @@
 
 const { ValidationError } = require("express-validation");
-
+const path = require("path");
+const { createLogger, format,transports } = require("winston");
+require('winston-daily-rotate-file');
+const { combine, timestamp, label, prettyPrint } = format;
 const NotFoundError = class NotFoundError extends Error {
   statusCode = 404;
   message = "Resource Not found";
@@ -13,10 +16,17 @@ const ResourceNotFounndError = class ResourceNotFounndError extends Error {
   statusCode = 409;
   message = "Resource Not Found";
 };
-const path = require("path");
-const { createLogger, format, transports } = require("winston");
-const { combine, timestamp, label, prettyPrint } = format;
 
+
+const errorLogTransport = new transports.DailyRotateFile({
+  dirname: path.join(__dirname, "../../log"),
+  filename: 'error-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: false,
+  maxSize: '20m',
+  maxFiles: '14d',
+  level: 'error'
+});
 const logger = createLogger({
   format: combine(
     label({ label: "errHandler" }),
@@ -26,9 +36,13 @@ const logger = createLogger({
   transports: [
     // 只有 error 等級的錯誤 , 才會將訊息寫到 error.log 檔案中
 <<<<<<< HEAD
+<<<<<<< HEAD
     new transports.File({ filename: path.join(__dirname, "../../log", "error.log"), level: "error" })
 =======
     new transports.File({ filename: path.join(__dirname, "../../log", "error.log"), level: "error" }),
+=======
+    errorLogTransport,
+>>>>>>> e17b66d (Install packages and fix some bugs)
     new transports.Console(),
 >>>>>>> b7f355f (add docker env)
     // info or 以上的等級的訊息 , 將訊息寫入 combined.log 檔案中

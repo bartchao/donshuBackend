@@ -32,8 +32,6 @@
     "mysql2": "^1.6.5",
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
-    "pug": "^3.0.2",
-    "rotating-file-stream": "^2.0.0",
     "sequelize": "^6.29.1",
     "socket.io": "^2.5.0",
     "socketio-jwt": "^4.5.0",
@@ -41,6 +39,7 @@
     "uuid": "^3.3.2",
     "validatorjs": "^3.22.1",
     "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1",
     "yaml": "^2.2.2"
   },
   "devDependencies": {
