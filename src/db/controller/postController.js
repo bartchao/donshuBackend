@@ -5,8 +5,7 @@ const { Post, File, Comment, Topic } = Model;
 const checkValidDate = require("../../util/checkValidDate");
 const { errHandler, ForbiddenError, NotFoundError } = require("../../helper/errHandler");
 
-const { responseWithData, errorResponse, successResponse } = require("../../helper/response");
-const { where } = require("sequelize");
+const { responseWithData, successResponse } = require("../../helper/response");
 function preProcessData (body, user) {
   const { type, startDate, endDate } = body;
   delete body.createdAt;

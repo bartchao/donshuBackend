@@ -22,7 +22,6 @@ Comment.hasMany(Reply);
 Reply.belongsTo(Comment);
 Reply.belongsTo(User);
 
-
 /*
     const typeArr = ["食","衣","住","行","育","樂","醫療長照"];
     const topicArr =[

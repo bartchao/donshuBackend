@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const socket_io = require("socket.io");
 const changecore = require("./socket/changecore");
 

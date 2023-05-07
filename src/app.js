@@ -7,7 +7,7 @@ const helmet = require("helmet");
 const path = require("path");
 const rateLimit = require("express-rate-limit");
 const winston = require("winston");
-require('winston-daily-rotate-file');
+require("winston-daily-rotate-file");
 const limiter = rateLimit({
   windowMs: 1 * 30 * 1000, // 30 sec
   max: 1000 // limit each IP to 100 requests per windowMs
@@ -19,15 +19,14 @@ const indexRouter = require("./routes/index");
 const publicRouter = require("./routes/public");
 const privateRouter = require("./routes/private");
 
-
 const errorLogTransport = new winston.transports.DailyRotateFile({
   dirname: path.join(__dirname, "../log"),
-  filename: 'error-%DATE%.log',
-  datePattern: 'YYYY-MM-DD',
+  filename: "error-%DATE%.log",
+  datePattern: "YYYY-MM-DD",
   zippedArchive: false,
-  maxSize: '20m',
-  maxFiles: '14d',
-  level: 'error'
+  maxSize: "20m",
+  maxFiles: "14d",
+  level: "error"
 });
 const logger = winston.createLogger({
   // 當 transport 不指定 level 時 , 使用 info 等級
@@ -72,23 +71,7 @@ app.use(compression()); // Compress all routes
 app.use(helmet());
 app.use(cors());
 
-<<<<<<< HEAD
 app.use("/", indexRouter);
-=======
-app.use("", indexRouter);
-<<<<<<< HEAD
->>>>>>> b7f355f (add docker env)
-if (process.env.NODE_ENV !== "production") {
-  const swaggerUi = require("swagger-ui-express");
-  const fs = require("fs");
-  const YAML = require("yaml");
-  const file = fs.readFileSync("./swagger/openapi.yaml", "utf8");
-  const swaggerDocument = YAML.parse(file);
-  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-}
-=======
-
->>>>>>> e17b66d (Install packages and fix some bugs)
 
 app.use(checkAPIkey);
 

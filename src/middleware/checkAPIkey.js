@@ -1,10 +1,7 @@
 module.exports = (req, res, next) => {
-<<<<<<< HEAD
-=======
-  console.log(req.originalUrl);
->>>>>>> b7f355f (add docker env)
   const { headers } = req;
   // console.log(headers);
+  // eslint-disable-next-line no-prototype-builtins
   const apiKey = (headers.hasOwnProperty("api-key"))
     ? headers["api-key"] // new version (beacause of nginx)
     : headers.api_key; // old version

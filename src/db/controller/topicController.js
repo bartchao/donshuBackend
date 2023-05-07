@@ -24,7 +24,7 @@ exports.addTopic = async (req, res, next) => {
     body.isCreatedByUser = true;
   }
   try {
-    const [topic, created] = await Topic.findOrCreate({
+    const [topic] = await Topic.findOrCreate({
       where: { typeId: body.typeId, topicName: body.topicName },
       defaults: {
         typeId: body.typeId,
