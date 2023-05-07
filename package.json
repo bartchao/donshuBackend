@@ -46,6 +46,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.3.0",
     "eslint-plugin-promise": "^6.0.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
     "sequelize-cli": "^6.5.1"
   }
 }

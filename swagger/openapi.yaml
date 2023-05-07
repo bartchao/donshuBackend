@@ -4,11 +4,7 @@ info:
   title: Donshi Backend Development API
   description: ''
 servers:
-<<<<<<< HEAD
-  - url: http://localhost:3000
-=======
   - url: http://localhost:8080/api
->>>>>>> b7f355f (add docker env)
   - url: https://livinglab.ccu.edu.tw/testapi
 tags:
   - name: ''
