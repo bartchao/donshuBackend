@@ -13,6 +13,6 @@ module.exports = (req, res, next) => {
         req.user = payload;
         return next();
       })
-      .catch(err => res.status(401).send(err));
-  } else res.status(401).send({ sucess: false, message: "VerifyTokenExpiredFailed" });
+      .catch(err => res.status(401).send({ sucess: false, message: "VerifyTokenFailed" }));
+  } else res.status(401).send({ sucess: false, message: "VerifyTokenFailed" });
 };
