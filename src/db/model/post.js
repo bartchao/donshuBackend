@@ -54,7 +54,7 @@ Post.init({
       },
       {
         model: User,
-        attributes: ["id", "username", "pictureUrl", "role"]
+        attributes: ["id", "username", "pictureUrl", "role","hasUserTicket"]
       },
       {
         model: File,
@@ -64,14 +64,14 @@ Post.init({
         attributes: ["id", "text", "updatedAt"],
         include: [{
           model: User,
-          attributes: ["id", "username", "pictureUrl", "role"]
+          attributes: ["id", "username", "pictureUrl", "role","hasUserTicket"]
         },
         {
           model: Reply,
           attributes: ["id", "text", "updatedAt"],
           include: [{
             model: User,
-            attributes: ["id", "username", "pictureUrl", "role"]
+            attributes: ["id", "username", "pictureUrl", "role","hasUserTicket"]
           }]
         }]
       }

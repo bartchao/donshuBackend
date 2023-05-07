@@ -1,6 +1,10 @@
 const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
+<<<<<<< HEAD
 const errHandler = require("../../helper/errHandler");
+=======
+const {errHandler} = require("../../helper/errHandler");
+>>>>>>> b7f355f (add docker env)
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
 const checkValidDate = require("../../util/checkValidDate");
 const { NotFoundError, responseWithData } = require("../../helper/response");

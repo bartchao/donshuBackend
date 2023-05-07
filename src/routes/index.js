@@ -10,6 +10,7 @@ router.get("/uploads/:upload", function (req, res) {
   const file = req.params.upload;
   console.log(req.params.upload);
   try {
+    console.log(__dirname);
     const img = fs.readFileSync(path.join(__dirname, "../../uploads/") + file);
     // console.log("!!!!");
     // console.log(img);
