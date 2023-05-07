@@ -3,9 +3,10 @@ const Model = require("../model");
 const { Post, File, Comment, Topic } = Model;
 
 const checkValidDate = require("../../util/checkValidDate");
-const errHandler = require("../../util/errHandler");
+const { errHandler, ForbiddenError, NotFoundError } = require("../../helper/errHandler");
 
-const { successResponse, errorResponse } = require("../helper");
+const { responseWithData, errorResponse, successResponse } = require("../../helper/response");
+const { where } = require("sequelize");
 function preProcessData (body, user) {
   const { type, startDate, endDate } = body;
   delete body.createdAt;
@@ -17,118 +18,102 @@ function preProcessData (body, user) {
   body.userId = user.id;
   return body;
 }
-exports.query = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  /* #swagger.requestBody = {
-            required: false,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            search: {
-                                type: "integer"
-                            },
-                            isNeed: {
-                                type:"boolean"
-                            },
-                            typeId: {
-                              type: "integer"
-                            },
-                            limit: {
-                              type: "integer"
-                            },
-                            offser: {
-                              type: "integer"
-                            }
-                        },
-                    }
-                }
-              }
-    } */
-  /* #swagger.responses[200] = {
-      description: '回傳搜尋到的Post',
-      schema: { $ref: "#/definitions/Post" }
-    } */
-  const { search, isNeed } = req.body;
-  //  console.log(search);
-  Post.findAll({
+/* exports.query = (req, res, next) => {
+  const { search, isNeed } = req.query;
+  const query = {
     where: {
-      [Op.or]: [
-      // LIKE '%search%'
-        { title: { [Op.substring]: search } },
-        { text: { [Op.substring]: search } }
-      ],
-      isNeed: (isNeed === "true")
+
     }
-  })
-    .then(response => successResponse(req, res, response))
+  };
+  if (isNeed !== undefined) {
+    query.where.isNeed = isNeed;
+  }
+  //  console.log(search);
+  Post.findAll(query)
+    .then(response => responseWithData(res, response))
     .catch(err => errorResponse(req, res, err.message));
-};
+}; */
 exports.addComment = (req, res, next) => {
-  // #swagger.tags = ['Post']
   const comment = req.body;
   comment.userId = req.user.id;
   const newComment = Comment.build(comment);
   Post.findByPk(comment.postId)
     .then(post => (post === null)
-      ? Promise.reject(new Error("Null"))
+      ? Promise.reject(new NotFoundError())
       : newComment.save())
-    .then((response) => successResponse(req, res, response))
+    .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
-exports.getAllWithType = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  const { typeId, isNeed } = req.body;
+/* exports.getAllWithType = (req, res, next) => {
+  const { typeId, isNeed } = req.query;
+  const whereObj = {};
+  if (typeId !== undefined) {
+    whereObj.typeId = typeId;
+  }
+  if (isNeed !== undefined) {
+    whereObj.isNeed = isNeed;
+  }
   Post.findAll({
-    where: {
-      typeId,
-      isNeed: (isNeed === "true")
-    }
+    where: whereObj
   })
-    .then(response => successResponse(req, res, response))
+    .then(response => responseWithData(res, response))
     .catch(err => errHandler(err, res));
-};
-exports.getLimitWithType = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  let { typeId, isNeed, offset, limit } = req.body;
-  offset = parseInt(offset);
-  limit = parseInt(limit);
+}; */
+exports.query = (req, res, next) => {
+  let { search, typeId, isNeed, offset, limit } = req.query;
+  let whereObj = {};
+  if (typeId !== undefined) {
+    whereObj.typeId = typeId;
+  }
+  if (isNeed !== undefined) {
+    whereObj.isNeed = isNeed;
+  }
+  if (offset === undefined) {
+    offset = 0;
+  } else {
+    offset = parseInt(offset);
+  }
+  if (limit === undefined) {
+    limit = 50;
+  } else {
+    limit = parseInt(limit);
+  }
+  if (search !== undefined) {
+    whereObj = {
+      [Op.or]: [
+        // LIKE '%search%'
+        { title: { [Op.substring]: search } },
+        { text: { [Op.substring]: search } }
+      ],
+      ...whereObj
+    };
+  }
   Post.findAll({
-    where: {
-      typeId,
-      isNeed: (isNeed === "true")
-    },
+    where: whereObj,
     limit,
     offset
   })
     .then(response => {
       // console.log(response);
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch(err => errHandler(err, res));
 };
 exports.getById = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  /* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            postId: {
-                                type: "string"
-                            }
-                        },
-                        required: ["postId"]
-                    }
-                }
-              }
-    } */
-  const { postId } = req.body;
+  const { postId } = req.query;
   Post.findOne({ where: { id: postId } })
-    .then(response => successResponse(res, response))
+    .then((response) => responseWithData(res, response))
+    .catch(err => errHandler(err, res));
+};
+exports.getByUserId = (req, res, next) => {
+  const { userId, isNeed } = req.query;
+  const whereObj = {};
+  whereObj.userId = userId === undefined ? req.user.id : userId;
+  if (isNeed !== undefined) {
+    whereObj.isNeed = isNeed;
+  }
+  Post.findAll({ where: whereObj })
+    .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
 async function createPost (body) {
@@ -150,43 +135,22 @@ async function createPost (body) {
   return result;
 }
 exports.addNewPost = (req, res, next) => {
-  // #swagger.tags = ['Post']
   let { body, user } = req;
   body = preProcessData(body, user);
   // console.log(body);
-  createPost(body).then(post => successResponse(res, post)).catch(err => errHandler(err, res));
+  createPost(body).then(post => responseWithData(res, post)).catch(err => errHandler(err, res));
 };
 exports.delete = (req, res, next) => {
-  // #swagger.tags = ['Post']
-  /* #swagger.requestBody = {
-            required: true,
-            "@content": {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            postId: {
-                                type: "string"
-                            }
-                        },
-                        required: ["postId"]
-                    }
-                }
-              }
-    } */
-  const body = req.body;
-  const pk = body.postId;
+  const pk = req.query.postId;
   Post.findByPk(pk)
     .then(post => {
-      if (post === null) { return Promise.reject(new Error("Null")); }
-      if (post.userId === req.user.id || req.user.role === 0) { return post.destroy(); } else { return Promise.reject(new Error("Forbbiden")); }
+      if (post === null) { return Promise.reject(new NotFoundError()); }
+      if (post.userId === req.user.id || req.user.role === 0) { return post.destroy(); } else { return Promise.reject(new ForbiddenError()); }
     })
-    .then(() => res.status(200).send({ succeess: true }))
+    .then(() => successResponse(res, "Delete Success"))
     .catch(err => errHandler(err, res));
 };
 exports.update = (req, res, next) => {
-  // #swagger.tags = ['Post']
-
   const { body, user } = req;
   const { files } = body;
   const uPost = preProcessData(body, user);
@@ -194,7 +158,7 @@ exports.update = (req, res, next) => {
   const pk = body.id;
   Post.findByPk(pk, { include: [File] })
     .then(post => {
-      if (post === null) { return Promise.reject(new Error("Null")); }
+      if (post === null) { return Promise.reject(new NotFoundError()); }
       if (post.userId === req.user.id) {
         post.files.map(file => file.destroy());
         uPost.userId = post.userId; // 把po文者換成原本的po文者
@@ -206,10 +170,10 @@ exports.update = (req, res, next) => {
         });
         const update = [postUpdate, filesUpdate];
         return Promise.all(update);
-      } else { return Promise.reject(new Error("Forbbiden")); }
+      } else { return Promise.reject(new ForbiddenError()); }
     })
     .then(post => {
-      successResponse(res, post);
+      responseWithData(res, post);
     })
     .catch(err => errHandler(err, res));
 };

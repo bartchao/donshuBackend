@@ -1,30 +1,18 @@
 const Model = require("../model");
 const getNewToken = require("../../util/token/getNewToken");
-const errHandler = require("../../util/errHandler");
+const errHandler = require("../../helper/errHandler");
 const verifyGoogleToken = require("../../middleware/verifyGoogleToken");
 const checkValidDate = require("../../util/checkValidDate");
-const { NotFoundError, successResponse } = require("../helper");
+const { NotFoundError, responseWithData } = require("../../helper/response");
 const { User } = Model;
 class RegisterFormError extends Error { }
 
 function preProcessData (body) {
   try {
-    const { password, gender, birthday, introduction, phone, pictureUrl, hasUserTicket } = body;
-    if (typeof hasUserTicket !== "boolean") {
-      throw new RegisterFormError("UserTicket cannot be other than true or false");
-    }
-    if (phone === null) {
-      throw new RegisterFormError("Phone cannot be null");
-    }
-    if (gender === null) {
-      throw new RegisterFormError("Gender cannot be null");
-    }
-    if (birthday == null) {
-      throw new RegisterFormError("Birthday cannot be null");
-    } else if (checkValidDate(new Date(birthday))) {
+    const { birthday, introduction, pictureUrl } = body;
+    if (checkValidDate(new Date(birthday))) {
       throw new RegisterFormError("Wrong format of birthday");
     } else body.birthday = new Date(birthday);
-    if (password === null) delete body.password; // 沒有這個欄位
     if (pictureUrl === null) delete body.pictureUrl;
     if (introduction === null) delete body.introduction;
   } catch (error) {
@@ -46,7 +34,7 @@ exports.getUser = (req, res, next) => {
       } */
   const { id } = req.user;
   User.findByPk(id)
-    .then((user) => user === null ? Promise.reject(new NotFoundError()) : successResponse(res, user))
+    .then((user) => user === null ? Promise.reject(new NotFoundError()) : responseWithData(res, user))
     .catch((err) => errHandler(err, res));
 };
 exports.register = (req, res, next) => {
@@ -132,13 +120,14 @@ exports.register = (req, res, next) => {
                 token:'<Token for every request use>'
               }
           } */
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
 exports.login = (req, res, next) => {
   // #swagger.deprecated = true
   const { account } = req.body;
+  console.log(account);
   User.findOne({ where: { account } })
     .then((user) => {
       const payload = {
@@ -152,7 +141,7 @@ exports.login = (req, res, next) => {
         success: true,
         token: getNewToken(payload)
       };
-      successResponse(res, response);
+      responseWithData(res, response);
     })
     .catch((err) => errHandler(err, res));
 };
@@ -202,7 +191,7 @@ exports.googleLogin = (req, res, next) => {
                 token:'<Token for every request use>'
               }
           } */
-            successResponse(res, response);
+            responseWithData(res, response);
           }
         }
       );

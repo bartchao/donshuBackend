@@ -1,11 +1,11 @@
 const Joi = require("joi");
-module.exports.updateComment = {
+module.exports.updateReply = {
   body: Joi.object({
     id: Joi.number().required(),
     text: Joi.string().required()
   })
 };
-module.exports.deleteComment = {
+module.exports.deleteReply = {
   query: Joi.object({
     id: Joi.number().required()
   })
