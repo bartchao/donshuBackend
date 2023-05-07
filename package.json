@@ -30,6 +30,7 @@
     "mysql2": "^1.6.5",
     "nodemon": "^2.0.22",
     "path": "^0.12.7",
+    "sanitize-filename": "^1.6.3",
     "sequelize": "^6.29.1",
     "socket.io": "^2.5.0",
     "socketio-jwt": "^4.5.0",
