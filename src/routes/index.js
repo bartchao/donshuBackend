@@ -3,12 +3,13 @@ const path = require("path");
 const { errHandler } = require("../helper/errHandler.js");
 const express = require("express");
 const router = express.Router();
+const sanitize = require("sanitize-filename");
 
 router.get("/", (req, res, next) => res.send("Hello!!"));
 
 router.get("/uploads/:upload", function (req, res) {
-  const file = req.params.upload;
-  console.log(req.params.upload);
+  const file = sanitize(req.params.upload);
+  //console.log(req.params.upload);
   try {
     console.log(__dirname);
     const img = fs.readFileSync(path.join(__dirname, "../../uploads/") + file);
@@ -23,9 +24,9 @@ router.get("/uploads/:upload", function (req, res) {
 });
 
 router.get("/apk/:apkFile", function (req, res) {
-  const file = req.params.apkFile;
+  const file = sanitize(req.params.apkFile);
   const dirpath = path.join(__dirname, "../../apk/");
-  console.log(req.params.apkFile);
+  //console.log(req.params.apkFile);
   try {
     const apk = fs.readFileSync(path.join(dirpath, file));
     // console.log("!!!!");
