@@ -1,4 +1,4 @@
-FROM node:14.20-slim
+FROM node:lts-buster-slim
 
 WORKDIR /usr/src/app
 # Install app dependencies
@@ -7,9 +7,9 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 RUN npm install
-RUN npm install -g nodemon
 # If you are building your code for production
 # RUN npm ci --omit=dev
 # Bundle app source
+RUN npm install -g nodemon
 EXPOSE 3000
 CMD [ "nodemon","./bin/www" ]
