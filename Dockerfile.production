@@ -1,4 +1,4 @@
-FROM node:14.20-slim
+FROM node:lts-buster-slim
 
 WORKDIR /usr/src/app
 # Install app dependencies
