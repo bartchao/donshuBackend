@@ -3,7 +3,7 @@ name: Build and Push to GCR
 on:
   push:
     branches: 
-      - 'node-14-test'
+      - 'node-16-test'
 
 # Environment variables available to all jobs and steps in this workflow
 env:
