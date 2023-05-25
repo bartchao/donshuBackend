@@ -32,7 +32,7 @@ module.exports = (req, res, next) => {
       })
       .catch(err => {
         console.error(err);
-        res.status(401).send({ sucess: false, message: "VerifyTokenExpiredFailed" });
+        res.status(401).send({ success: false, message: "VerifyTokenExpiredFailed" });
       });
-  } else res.status(401).send({ sucess: false, message: "VerifyTokenExpiredFailed" } );
+  } else res.status(401).send({ success: false, message: "VerifyTokenExpiredFailed" } );
 };
