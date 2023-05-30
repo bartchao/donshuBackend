@@ -12,3 +12,4 @@ google_client.js
 
 .docker/
 .devcontainer/
+ecosystem.config.js
