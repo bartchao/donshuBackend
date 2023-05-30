@@ -1,4 +1,5 @@
-FROM node:lts-buster-slim
+# 本機開發用環境
+FROM keymetrics/pm2:16-slim
 
 WORKDIR /usr/src/app
 # Install app dependencies
@@ -10,6 +11,5 @@ RUN npm install
 # If you are building your code for production
 # RUN npm ci --omit=dev
 # Bundle app source
-RUN npm install -g nodemon
 EXPOSE 3000
-CMD [ "nodemon","./bin/www" ]
+CMD [ "pm2-runtime", "start", "ecosystem.config.js"]

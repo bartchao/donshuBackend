@@ -51,11 +51,12 @@ module.exports.errHandler = (error, res) => {
   } else {
     res.status(500).send({ Error: "Internal Server Error" });
   }
-  const { user, originalUrl } = res.req;
+  const { user, originalUrl,body,query } = res.req;
   const errorLog = {
     url: originalUrl,
     user: user === undefined ? "Public" : user.id,
-    body: res.req.body,
+    body:body,
+    query:query,
     error
   };
   logger.error(errorLog);

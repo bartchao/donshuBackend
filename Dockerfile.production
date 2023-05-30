@@ -1,4 +1,5 @@
-FROM node:lts-buster-slim
+# Stagging/Production
+FROM keymetrics/pm2:16-slim
 
 WORKDIR /usr/src/app
 # Install app dependencies
@@ -12,4 +13,4 @@ RUN npm ci --omit=dev
 # Bundle app source
 COPY . .
 EXPOSE 3000
-CMD [ "node","./bin/www" ]
+CMD [ "pm2-runtime", "start", "ecosystem.config.js", "--env", "production" ]
