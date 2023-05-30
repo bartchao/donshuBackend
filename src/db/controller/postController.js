@@ -6,7 +6,7 @@ const checkValidDate = require("../../util/checkValidDate");
 const { errHandler, ForbiddenError, NotFoundError } = require("../../helper/errHandler");
 
 const { responseWithData, successResponse } = require("../../helper/response");
-function preProcessData (body, user) {
+function preProcessData(body, user) {
   const { type, startDate, endDate } = body;
   delete body.createdAt;
   body.typeId = type.id; delete body.type;
@@ -17,6 +17,7 @@ function preProcessData (body, user) {
   body.userId = user.id;
   return body;
 }
+
 /* exports.query = (req, res, next) => {
   const { search, isNeed } = req.query;
   const query = {
@@ -115,7 +116,7 @@ exports.getByUserId = (req, res, next) => {
     .then((response) => responseWithData(res, response))
     .catch(err => errHandler(err, res));
 };
-async function createPost (body) {
+async function createPost(body) {
   const result = await Post.sequelize.transaction(async (t) => {
     if (body.topic.topicName !== undefined) {
       const addCustomTopic = {
@@ -143,8 +144,13 @@ exports.delete = (req, res, next) => {
   const pk = req.query.postId;
   Post.findByPk(pk)
     .then(post => {
-      if (post === null) { return Promise.reject(new NotFoundError()); }
-      if (post.userId === req.user.id || req.user.role === 0) { return post.destroy(); } else { return Promise.reject(new ForbiddenError()); }
+      if (post === null) {
+        return Promise.reject(new NotFoundError());
+      } else if (post.userId === req.user.id || req.user.role === 0) {
+        return post.destroy();
+      } else {
+        return Promise.reject(new ForbiddenError());
+      }
     })
     .then(() => successResponse(res, "Delete Success"))
     .catch(err => errHandler(err, res));
